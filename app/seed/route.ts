@@ -109,7 +109,6 @@ export async function GET() {
   try {
     console.log('Starting database seeding...');
     
-    // Execute seeding functions sequentially instead of in parallel
     await seedUsers();
     console.log('Users seeded');
     
@@ -123,9 +122,12 @@ export async function GET() {
     console.log('Revenue seeded');
 
     return Response.json({ message: 'Database seeded successfully' });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Seeding error:', error);
-    return Response.json({ error: { message: error.message, code: error.code } }, { status: 500 });
+    if (error instanceof Error) {
+      return Response.json({ error: { message: error.message } }, { status: 500 });
+    }
+    return Response.json({ error: 'An unknown error occurred' }, { status: 500 });
   } finally {
     await sql.end();
   }
