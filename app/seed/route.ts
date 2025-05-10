@@ -4,8 +4,8 @@ import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { 
   ssl: 'require',
-  connectionTimeoutMillis: 30000,
-  query_timeout: 30000
+  connect_timeout: 30,
+  idle_timeout: 30
 });
 
 async function seedUsers() {
