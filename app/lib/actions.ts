@@ -9,9 +9,15 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
  
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string({ invalid_type_error: 'Please select a customer.' }),
-  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], { invalid_type_error: 'Please select an invoice status.' }),
+  customerId: z.string({ 
+    invalid_type_error: 'Bitte wählen Sie einen Kunden aus.' 
+  }),
+  amount: z.coerce
+    .number()
+    .gt(0, { message: 'Bitte geben Sie einen Betrag größer als $0 ein.' }),
+  status: z.enum(['pending', 'paid'], { 
+    invalid_type_error: 'Bitte wählen Sie einen Rechnungsstatus aus.' 
+  }),
   date: z.string(),
 });
 
@@ -39,7 +45,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.',
+      message: 'Fehlende Felder. Erstellung der Rechnung fehlgeschlagen.',
     };
   }
  
@@ -57,7 +63,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   } catch (error) {
     // Wenn ein Datenbankfehler auftritt, gib eine spezifischere Fehlermeldung zurück.
     return {
-      message: 'Database Error: Failed to Create Invoice.',
+      message: 'Datenbankfehler: Rechnung konnte nicht erstellt werden.',
     };
   }
  
