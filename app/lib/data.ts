@@ -191,42 +191,30 @@ export async function fetchFilteredMeasurements(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const measurements = await sql`
-      WITH ChannelCounts AS (
-        SELECT 
-          measurement_id,
-          COUNT(*) as channel_count
-        FROM measurement_channels
-        GROUP BY measurement_id
-      )
+    const measurements = await sql<MeasurementTableEntry[]>`
       SELECT 
         m.id,
         meta.filename,
-        meta.created_at,
         meta.description,
         meta.status,
-        COALESCE(cc.channel_count, 0) as channel_count
+        m.created_at,
+        COUNT(DISTINCT mc.id) as channel_count
       FROM measurements m
       LEFT JOIN metadata meta ON m.id = meta.measurement_id
-      LEFT JOIN ChannelCounts cc ON m.id = cc.measurement_id
+      LEFT JOIN measurement_channels mc ON m.id = mc.measurement_id
       WHERE
         meta.filename ILIKE ${`%${query}%`} OR
         meta.description ILIKE ${`%${query}%`}
-      ORDER BY meta.created_at DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+      GROUP BY m.id, meta.filename, meta.description, meta.status, m.created_at
+      ORDER BY m.created_at DESC
+      LIMIT ${ITEMS_PER_PAGE}
+      OFFSET ${offset}
     `;
 
-    return measurements.map(m => ({
-      id: m.id,
-      filename: m.filename,
-      created_at: m.created_at,
-      description: m.description,
-      status: m.status as 'offen' | 'validiert',
-      channel_count: Number(m.channel_count)
-    }));
+    return measurements;
   } catch (error) {
-    console.error('Datenbankfehler:', error);
-    throw new Error('Fehler beim Laden der Messungen.');
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch measurements.');
   }
 }
 
@@ -247,10 +235,10 @@ export async function fetchMetadataPages(query: string) {
   }
 }
 
-export async function fetchMeasurementPages(query: string) {
+export async function fetchMeasurementsPages(query: string) {
   try {
     const count = await sql`
-      SELECT COUNT(*)
+      SELECT COUNT(DISTINCT m.id)
       FROM measurements m
       LEFT JOIN metadata meta ON m.id = meta.measurement_id
       WHERE
@@ -261,7 +249,7 @@ export async function fetchMeasurementPages(query: string) {
     const totalPages = Math.ceil(Number(count[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Datenbankfehler:', error);
-    throw new Error('Fehler beim Laden der Seitenzahl.');
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of measurements.');
   }
 }

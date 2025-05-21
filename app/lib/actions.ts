@@ -133,3 +133,32 @@ export async function authenticate(
     throw error;
   }
 }
+
+export async function deleteMeasurement(id: string) {
+  try {
+    await sql`
+      DELETE FROM measurement_values
+      WHERE measurement_id = ${id}
+    `;
+    
+    await sql`
+      DELETE FROM measurement_channels
+      WHERE measurement_id = ${id}
+    `;
+
+    await sql`
+      DELETE FROM metadata
+      WHERE measurement_id = ${id}
+    `;
+
+    await sql`
+      DELETE FROM measurements
+      WHERE id = ${id}
+    `;
+
+    revalidatePath('/dashboard/measurements');
+    return { message: 'Messung erfolgreich gelöscht.' };
+  } catch (error) {
+    return { message: 'Fehler beim Löschen der Messung.' };
+  }
+}
