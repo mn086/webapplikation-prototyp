@@ -2,7 +2,7 @@ import sql, { Measurement, Metadata } from './db';
 
 export async function fetchTimeseriesData() {
   try {
-    console.log('Fetching timeseries data...');
+    console.log('Lade Zeitreihendaten...');
     
     const data = await sql<Measurement[]>`
       SELECT * FROM measurements 
@@ -10,11 +10,17 @@ export async function fetchTimeseriesData() {
       LIMIT 100
     `;
 
-    console.log('Timeseries data fetched successfully');
-    return data;
+    // Formatiere den Zeitstempel zu einem ISO String für das Tremor Diagramm
+    const formattedData = data.map(row => ({
+      ...row,
+      timestamp: row.timestamp.toISOString()
+    }));
+
+    console.log('Zeitreihendaten erfolgreich geladen');
+    return formattedData;
   } catch (error: unknown) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch timeseries data.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Zeitreihendaten.');
   }
 }
 
@@ -29,8 +35,8 @@ export async function fetchLatestMetadata() {
     
     return data;
   } catch (error: unknown) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest metadata.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der aktuellen Metadaten.');
   }
 }
 
@@ -61,8 +67,8 @@ export async function fetchDashboardData() {
       openCount,
     };
   } catch (error: unknown) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch dashboard data.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Dashboard-Daten.');
   }
 }
 
@@ -87,8 +93,8 @@ export async function fetchFilteredMetadata(
 
     return metadata;
   } catch (error: unknown) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch metadata.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Metadaten.');
   }
 }
 
@@ -104,7 +110,7 @@ export async function fetchMetadataPages(query: string) {
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error: unknown) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of metadata entries.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Gesamtanzahl der Metadaten-Einträge.');
   }
 }
