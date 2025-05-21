@@ -110,26 +110,24 @@ export async function fetchLatestMetadata() {
 export async function fetchDashboardData() {
   try {
     const measurementCountPromise = sql`SELECT COUNT(*) FROM measurements`;
-    const metadataCountPromise = sql`SELECT COUNT(*) FROM metadata`;
-    const statusCountPromise = sql`SELECT
-         COUNT(CASE WHEN status = 'validiert' THEN 1 END) AS "validiert",
-         COUNT(CASE WHEN status = 'offen' THEN 1 END) AS "offen"
-         FROM metadata`;
+    const statusCountPromise = sql`
+      SELECT
+        COUNT(CASE WHEN status = 'validiert' THEN 1 END) AS "validiert",
+        COUNT(CASE WHEN status = 'offen' THEN 1 END) AS "offen"
+      FROM metadata
+    `;
 
     const data = await Promise.all([
       measurementCountPromise,
-      metadataCountPromise,
       statusCountPromise,
     ]);
 
     const numberOfMeasurements = Number(data[0][0].count ?? '0');
-    const numberOfMetadata = Number(data[1][0].count ?? '0');
-    const validatedCount = Number(data[2][0].validiert ?? '0');
-    const openCount = Number(data[2][0].offen ?? '0');
+    const validatedCount = Number(data[1][0].validiert ?? '0');
+    const openCount = Number(data[1][0].offen ?? '0');
 
     return {
       numberOfMeasurements,
-      numberOfMetadata,
       validatedCount,
       openCount,
     };

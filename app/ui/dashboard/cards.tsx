@@ -1,6 +1,5 @@
 import {
   ChartBarIcon,
-  DocumentIcon,
   CheckCircleIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
@@ -9,7 +8,6 @@ import { fetchDashboardData } from '@/app/lib/data';
 
 const iconMap = {
   measurements: ChartBarIcon,
-  metadata: DocumentIcon,
   validated: CheckCircleIcon,
   open: ClockIcon,
 };
@@ -17,7 +15,6 @@ const iconMap = {
 export default async function CardWrapper() {
   const {
     numberOfMeasurements,
-    numberOfMetadata,
     validatedCount,
     openCount,
   } = await fetchDashboardData();
@@ -25,22 +22,17 @@ export default async function CardWrapper() {
   return (
     <>
       <Card 
-        title="Messungen" 
+        title="Gesamt Messungen" 
         value={numberOfMeasurements} 
         type="measurements" 
       />
       <Card 
-        title="Metadaten" 
-        value={numberOfMetadata} 
-        type="metadata" 
-      />
-      <Card 
-        title="Validierte Einträge" 
+        title="Validierte Messungen" 
         value={validatedCount} 
         type="validated" 
       />
       <Card
-        title="Offene Einträge"
+        title="Offene Messungen"
         value={openCount}
         type="open"
       />
@@ -55,7 +47,7 @@ export function Card({
 }: {
   title: string;
   value: number | string;
-  type: 'measurements' | 'metadata' | 'validated' | 'open';
+  type: 'measurements' | 'validated' | 'open';
 }) {
   const Icon = iconMap[type];
 
