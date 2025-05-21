@@ -13,12 +13,18 @@ Diese Anwendung ist ein Dashboard zur Visualisierung von Zeitreihendaten, das mi
 
 ```
 app/
-├── api/                # API-Routes
-│   └── init/         # Endpunkt für Datenbankinitialisierung
-├── dashboard/         # Dashboard-Bereich
-│   └── (overview)/   # Übersichtsseite mit Zeitreihen-Visualisierung
-├── lib/              # Hilfsfunktionen & Definitionen
-│   ├── actions.ts    # Server Actions & Formvalidierung
+├── api/                      # API-Routes
+│   ├── init/                # Endpunkt für Datenbankinitialisierung
+│   ├── seed/                # Endpunkt zum Befüllen der DB mit Testdaten
+│   └── test-data/          # Endpunkt zum Abfragen der Daten
+├── dashboard/               # Dashboard-Bereich
+│   └── (overview)/         # Übersichtsseite mit Zeitreihen-Visualisierung
+├── lib/                    # Hilfsfunktionen & Definitionen
+│   ├── actions.ts          # Server Actions & Formvalidierung
+│   ├── data.ts            # Datenzugriffsschicht (Data Access Layer)
+│   ├── db.ts              # Zentrale Datenbankverbindung
+│   ├── schema.sql         # Datenbankschema-Definition
+│   └── seed.sql           # SQL für Testdaten
 │   ├── data.ts      # Datenbankzugriffe
 │   ├── db.ts        # Datenbankanbindung und Typen
 │   ├── definitions.ts # Typdefinitionen
@@ -85,3 +91,34 @@ app/
 - Formvalidierung: Zod
 - Charting: Tremor (geplant)
 - Package Manager: pnpm
+
+## Datenbankstruktur & Wichtige Dateien
+
+Die Anwendung nutzt eine PostgreSQL-Datenbank zur Speicherung von Zeitreihendaten. Die wichtigsten Dateien und ihre Funktionen sind:
+
+### Datenbankzugriff
+- `lib/db.ts`: Zentrale Datenbankverbindung mit Connection Pooling
+- `lib/schema.sql`: Definition der Tabellen und Indizes
+- `lib/seed.sql`: SQL-Skript zum Befüllen mit Testdaten
+- `lib/data.ts`: Data Access Layer mit TypeScript-Typen und Datenbankfunktionen
+
+### API-Endpunkte
+- `api/init/route.ts`: Initialisiert die Datenbankstruktur
+- `api/seed/route.ts`: Befüllt die Datenbank mit Testdaten
+- `api/test-data/route.ts`: API zum Abfragen der Daten
+
+### Datenbankfunktionen (data.ts)
+Der Data Access Layer bietet folgende Hauptfunktionen:
+- `fetchTimeseriesData()`: Lädt Zeitreihendaten mit Metadaten
+- `fetchDashboardData()`: Liefert aggregierte Daten fürs Dashboard
+- `fetchFilteredMeasurements()`: Implementiert Suche und Paginierung
+- `fetchMeasurementStats()`: Liefert Statistiken über Messungen
+
+### Datenbankschema
+Die Datenbank verwendet folgende Tabellen:
+- `measurements`: Haupttabelle für Messungen
+- `metadata`: Zusatzinformationen zu Messungen
+- `measurement_channels`: Definiert die Messkanäle
+- `measurement_values`: Eigentliche Messwerte mit Zeitstempeln
+
+Alle Datenbankzugriffe sind typsicher durch TypeScript-Definitionen und verwenden parametrisierte SQL-Abfragen für optimale Sicherheit.

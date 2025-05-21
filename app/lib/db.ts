@@ -7,11 +7,23 @@ const sql = postgres({
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     port: 5432,
-    ssl: 'require',
+    ssl: true,
     // Connection-Pooling Konfiguration
     max: 10, // maximale Anzahl gleichzeitiger Verbindungen
     idle_timeout: 20, // Timeout für inaktive Verbindungen in Sekunden
-    connect_timeout: 10, // Verbindungs-Timeout in Sekunden
+    connect_timeout: 10, // Verbindungs-Timeout in Sekunden,
+    connection: {
+        options: '-c timezone=UTC'
+    },
+    transform: {
+        undefined: null,
+    },
+    onnotice: (notice) => {
+        console.log('Database notice:', notice);
+    },
+    debug: (connection, query, params) => {
+        console.log('Database query:', query, params);
+    },
 });
 
 // Typdefinitionen
