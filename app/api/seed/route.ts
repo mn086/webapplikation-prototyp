@@ -15,65 +15,51 @@ export async function GET() {
         AND table_name = 'measurements'
       );
     `;
+    console.log('Table exists check:', tableExists[0]?.exists);
     
     if (!tableExists[0]?.exists) {
       const schemaPath = path.join(process.cwd(), 'app', 'lib', 'schema.sql');
       const schemaScript = await fs.readFile(schemaPath, 'utf8');
+      console.log('Initializing schema...');
       await sql.unsafe(schemaScript);
       console.log('Schema initialized successfully');
     }
 
-    // Now insert test data step by step
-    console.log('Creating new measurement...');
-    const measurementResult = await sql`
-      INSERT INTO measurements DEFAULT VALUES RETURNING id;
+    // Read seed script
+    const seedPath = path.join(process.cwd(), 'app', 'lib', 'seed.sql');
+    const seedScript = await fs.readFile(seedPath, 'utf8');
+    console.log('Read seed script, length:', seedScript.length);
+    
+    // Execute seed script in transaction
+    console.log('Starting transaction...');
+    await sql.begin(async (sql) => {
+      console.log('Executing first measurement insert...');
+      await sql.unsafe(seedScript);
+      console.log('Seed script executed successfully');
+    });
+    
+    // Verify the results
+    const status = await sql`
+      SELECT 
+        (SELECT COUNT(*) FROM measurements) as total_measurements,
+        (SELECT COUNT(*) FROM metadata WHERE status = 'validiert') as validated_count,
+        (SELECT COUNT(*) FROM metadata WHERE status = 'offen') as open_count,
+        array_agg(row_to_json(m)) as measurement_details
+      FROM (
+        SELECT m.id, meta.status, meta.filename
+        FROM measurements m
+        LEFT JOIN metadata meta ON m.id = meta.measurement_id
+        ORDER BY m.created_at DESC
+      ) m;
     `;
-    const measurementId = measurementResult[0].id;
-    console.log('Created measurement with ID:', measurementId);
-
-    console.log('Adding metadata...');
-    await sql`
-      INSERT INTO metadata (measurement_id, filename, description, status)
-      VALUES (${measurementId}, 'temperatur_druck_20250521.csv', 'Temperatur- und Druckmessung Anlage A', 'validiert');
-    `;
-
-    console.log('Creating temperature channel...');
-    const tempChannelResult = await sql`
-      INSERT INTO measurement_channels (measurement_id, channel_name, unit)
-      VALUES (${measurementId}, 'Temperatur', '°C')
-      RETURNING id;
-    `;
-    const tempChannelId = tempChannelResult[0].id;
-
-    console.log('Creating pressure channel...');
-    const pressureChannelResult = await sql`
-      INSERT INTO measurement_channels (measurement_id, channel_name, unit)
-      VALUES (${measurementId}, 'Druck', 'bar')
-      RETURNING id;
-    `;
-    const pressureChannelId = pressureChannelResult[0].id;
-
-    console.log('Adding temperature values...');
-    await sql`
-      INSERT INTO measurement_values (measurement_id, channel_id, seconds_from_start, value)
-      SELECT ${measurementId}, ${tempChannelId}, seconds, 20 + random() * 5
-      FROM generate_series(0, 60, 10) AS t(seconds);
-    `;
-
-    console.log('Adding pressure values...');
-    await sql`
-      INSERT INTO measurement_values (measurement_id, channel_id, seconds_from_start, value)
-      SELECT ${measurementId}, ${pressureChannelId}, seconds, 2.5 + random() * 0.5
-      FROM generate_series(0, 60, 10) AS t(seconds);
-    `;
-
-    console.log('Seeding completed successfully');
+    
+    console.log('Seeding verification:', status[0]);
     return NextResponse.json({ 
       message: 'Test data seeded successfully',
-      measurementId 
+      status: status[0]
     });
   } catch (error) {
-    console.error('Error seeding test data:', error);
+    console.error('Error details:', error);
     return NextResponse.json(
       { error: 'Failed to seed test data', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
