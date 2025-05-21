@@ -1,10 +1,9 @@
 import CardWrapper from '@/app/ui/dashboard/cards';
-import RevenueChart from '@/app/ui/dashboard/revenue-chart';
-import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+import TimeseriesChart from '@/app/ui/dashboard/timeseries-chart';
+import LatestMetadata from '@/app/ui/dashboard/latest-metadata';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchCardData } from '@/app/lib/data';
 import { Suspense } from 'react';
-import { CardsSkeleton, RevenueChartSkeleton, LatestInvoicesSkeleton } from '@/app/ui/skeletons';
+import { CardsSkeleton, LatestMetadataSkeleton, TimeseriesChartSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const { totalPaidInvoices, totalPendingInvoices, numberOfInvoices, numberOfCustomers } = await fetchCardData();
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
@@ -24,11 +22,11 @@ export default async function Page() {
         </Suspense>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <Suspense fallback={<RevenueChartSkeleton />}>
-          <RevenueChart />
+        <Suspense fallback={<TimeseriesChartSkeleton />}>
+          <TimeseriesChart />
         </Suspense>
-        <Suspense fallback={<LatestInvoicesSkeleton />}>
-          <LatestInvoices />
+        <Suspense fallback={<LatestMetadataSkeleton />}>
+          <LatestMetadata />
         </Suspense>
       </div>
     </main>

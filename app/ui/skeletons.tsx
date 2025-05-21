@@ -216,3 +216,40 @@ export function InvoicesTableSkeleton() {
     </div>
   );
 }
+
+export function TimeseriesChartSkeleton() {
+  return (
+    <div className="rounded-xl bg-gray-100 p-4">
+      <div className="mt-4 sm:mt-6">
+        <div className="h-[350px] w-full rounded-lg bg-gray-200" />
+      </div>
+    </div>
+  );
+}
+
+export function LatestMetadataSkeleton() {
+  return (
+    <div className="flex w-full flex-col md:col-span-4">
+      <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
+        <div className="bg-white px-6">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="flex flex-row items-center justify-between py-4"
+            >
+              <div className="flex items-center">
+                <div className="min-w-0">
+                  <div className="h-5 w-32 rounded-md bg-gray-200" />
+                  <div className="mt-2 h-4 w-24 rounded-md bg-gray-200" />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-16 rounded-md bg-gray-200" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
