@@ -3,10 +3,9 @@ import sql, { Measurement, Metadata } from './db';
 export async function fetchTimeseriesData() {
   try {
     console.log('Lade Zeitreihendaten...');
-    
-    const data = await sql<Measurement[]>`
+      const data = await sql<Measurement[]>`
       SELECT * FROM measurements 
-      ORDER BY timestamp DESC 
+      ORDER BY timestamp ASC 
       LIMIT 100
     `;
 
