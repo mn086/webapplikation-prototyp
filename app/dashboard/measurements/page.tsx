@@ -3,9 +3,9 @@ import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/measurements/table';
 import { CreateMeasurement } from '@/app/ui/measurements/buttons';
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
+import { TableSkeleton } from '@/app/ui/skeletons';
 import { fetchMeasurementsPages } from '@/app/lib/data';
-import Pagination from '@/app/ui/invoices/pagination';
+import Pagination from '@/app/ui/pagination';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -19,9 +19,8 @@ export default async function Page({
     query?: string;
     page?: string;
   };
-}) {
-  const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
+}) {  const query = (await searchParams)?.query || '';
+  const currentPage = Number((await searchParams)?.page) || 1;
   const totalPages = await fetchMeasurementsPages(query);
 
   return (
@@ -33,7 +32,7 @@ export default async function Page({
         <Search placeholder="Messungen suchen..." />
         <CreateMeasurement />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
         <Table query={query} currentPage={currentPage} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">

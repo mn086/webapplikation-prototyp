@@ -9,110 +9,59 @@ import { AuthError } from 'next-auth';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
  
-const FormSchema = z.object({
-  id: z.string(),
-  customerId: z.string({ 
-    invalid_type_error: 'Bitte wählen Sie einen Kunden aus.' 
-  }),
-  amount: z.coerce
-    .number()
-    .gt(0, { message: 'Bitte geben Sie einen Betrag größer als $0 ein.' }),
-  status: z.enum(['pending', 'paid'], { 
-    invalid_type_error: 'Bitte wählen Sie einen Rechnungsstatus aus.' 
-  }),
-  date: z.string(),
-});
-
-// Verwende Zod, um die erwarteten Typen zu definieren
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
-
 export type State = {
   errors?: {
-    customerId?: string[];
-    amount?: string[];
+    measurementType?: string[];
+    timeRange?: string[];
+    analysisType?: string[];
+    filename?: string[];
+    description?: string[];
     status?: string[];
   };
   message?: string | null;
 };
 
-export async function createInvoice(prevState: State, formData: FormData) {
-  // Validieren des Formulars mit Zod
-  const validatedFields = CreateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+const CreateAnalysis = z.object({
+  measurementType: z.enum(['temperature', 'humidity', 'pressure'], {
+    invalid_type_error: 'Bitte wählen Sie einen Messungstyp.',
+  }),
+  timeRange: z.enum(['1h', '24h', '7d', '30d'], {
+    invalid_type_error: 'Bitte wählen Sie einen Zeitraum.',
+  }),
+  analysisType: z.enum(['trend', 'anomaly'], {
+    invalid_type_error: 'Bitte wählen Sie einen Analysetyp.',
+  }),
+});
+
+export async function createAnalysis(prevState: State, formData: FormData) {
+  const validatedFields = CreateAnalysis.safeParse({
+    measurementType: formData.get('measurementType'),
+    timeRange: formData.get('timeRange'),
+    analysisType: formData.get('analysisType'),
   });
- 
-  // Wenn die Formularvalidierung fehlschlägt, gib frühzeitig Fehler zurück. Andernfalls fahre fort.
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Fehlende Felder. Erstellung der Rechnung fehlgeschlagen.',
+      message: 'Fehlende Felder. Erstellung der Analyse fehlgeschlagen.',
     };
   }
- 
-  // Daten für das Einfügen in die Datenbank vorbereiten
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
- 
-  // Daten in die Datenbank einfügen
+
+  const { measurementType, timeRange, analysisType } = validatedFields.data;
+
   try {
     await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+      INSERT INTO analyses (measurement_type, time_range, analysis_type, created_at)
+      VALUES (${measurementType}, ${timeRange}, ${analysisType}, NOW())
     `;
-  } catch (error) {
-    // Wenn ein Datenbankfehler auftritt, gib eine spezifischere Fehlermeldung zurück.
-    return {
-      message: 'Datenbankfehler: Rechnung konnte nicht erstellt werden.',
-    };
-  }
- 
-  // Revalidiere den Cache für die Rechnungsseite und leite den Benutzer um
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
-}
-
-// Verwende Zod, um die erwarteten Typen zu aktualisieren
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
-
-export async function updateInvoice(id: string, prevState: State, formData: FormData) {
-  const validatedFields = UpdateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
-  });
- 
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Fehlende Felder. Aktualisierung der Rechnung fehlgeschlagen.',
-    };
-  }
- 
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
- 
-  try {
-    await sql`
-        UPDATE invoices
-        SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-        WHERE id = ${id}
-      `;
+    
+    revalidatePath('/dashboard/analysis');
+    redirect('/dashboard/analysis');
   } catch (error) {
     return {
-      message: 'Datenbankfehler: Rechnung konnte nicht aktualisiert werden.',
+      message: 'Datenbankfehler: Analyse konnte nicht erstellt werden.',
     };
   }
- 
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
-}
-
-export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/invoices');
 }
 
 export async function authenticate(
@@ -160,5 +109,60 @@ export async function deleteMeasurement(id: string) {
     return { message: 'Messung erfolgreich gelöscht.' };
   } catch (error) {
     return { message: 'Fehler beim Löschen der Messung.' };
+  }
+}
+
+const UpdateMeasurement = z.object({
+  id: z.string(),
+  filename: z.string({
+    invalid_type_error: 'Bitte geben Sie einen Namen ein.',
+  }),
+  description: z.string().nullable(),
+  status: z.enum(['offen', 'validiert'], {
+    invalid_type_error: 'Bitte wählen Sie einen Status.',
+  }),
+});
+
+export async function updateMeasurement(id: string, formData: FormData) {
+  const validatedFields = UpdateMeasurement.safeParse({
+    id,
+    filename: formData.get('filename'),
+    description: formData.get('description') || null, // Explizit null für leere Beschreibungen
+    status: formData.get('status'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Fehlende Felder. Aktualisierung der Messung fehlgeschlagen.',
+    };
+  }
+
+  const { filename, description, status } = validatedFields.data;
+  try {
+    // Direkt die Metadaten aktualisieren
+    const result = await sql`
+      UPDATE metadata
+      SET filename = ${filename},
+          description = ${description},
+          status = ${status}
+      WHERE measurement_id = ${id}
+      RETURNING *
+    `;
+
+    if (!result || result.length === 0) {
+      return {
+        message: 'Metadaten nicht gefunden.'
+      };
+    }
+    
+    revalidatePath('/dashboard/measurements');
+    revalidatePath(`/dashboard/analysis/${id}`);
+    redirect('/dashboard/measurements');
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Messung:', error);
+    return {
+      message: 'Datenbankfehler: Messung konnte nicht aktualisiert werden.',
+    };
   }
 }

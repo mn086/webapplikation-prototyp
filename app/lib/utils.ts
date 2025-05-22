@@ -8,17 +8,17 @@ export const formatCurrency = (amount: number) => {
 };
 
 export const formatDateToLocal = (
-  dateStr: string,
-  locale: string = 'en-US',
+  date: string | Date,
+  locale: string = 'de-DE',
 ) => {
-  const date = new Date(dateStr);
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
-  return formatter.format(date);
+  return formatter.format(dateObj);
 };
 
 export const generateYAxis = (revenue: Revenue[]) => {

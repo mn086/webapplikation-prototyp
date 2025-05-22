@@ -8,10 +8,9 @@ const sql = postgres({
     password: process.env.POSTGRES_PASSWORD,
     port: 5432,
     ssl: true,
-    // Connection-Pooling Konfiguration
-    max: 10, // maximale Anzahl gleichzeitiger Verbindungen
-    idle_timeout: 20, // Timeout für inaktive Verbindungen in Sekunden
-    connect_timeout: 10, // Verbindungs-Timeout in Sekunden,
+    max: 10,
+    idle_timeout: 20,
+    connect_timeout: 10,
     connection: {
         options: '-c timezone=UTC'
     },

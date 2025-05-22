@@ -1,4 +1,5 @@
 import sql from './db';
+import { MeasurementForm } from '@/app/lib/definitions';
 
 export type MeasurementWithMetadata = {
   id: string;
@@ -184,37 +185,37 @@ export async function fetchFilteredMetadata(
   }
 }
 
-export async function fetchFilteredMeasurements(
-  query: string,
-  currentPage: number,
-) {
+export async function fetchFilteredMeasurements(query: string, currentPage: number) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const measurements = await sql<MeasurementTableEntry[]>`
+    const measurements = await sql`
+      WITH ChannelCounts AS (
+        SELECT measurement_id, COUNT(*) as channel_count
+        FROM measurement_channels
+        GROUP BY measurement_id
+      )
       SELECT 
         m.id,
         meta.filename,
         meta.description,
         meta.status,
         m.created_at,
-        COUNT(DISTINCT mc.id) as channel_count
+        COALESCE(cc.channel_count, 0) as channel_count
       FROM measurements m
       LEFT JOIN metadata meta ON m.id = meta.measurement_id
-      LEFT JOIN measurement_channels mc ON m.id = mc.measurement_id
+      LEFT JOIN ChannelCounts cc ON m.id = cc.measurement_id
       WHERE
         meta.filename ILIKE ${`%${query}%`} OR
         meta.description ILIKE ${`%${query}%`}
-      GROUP BY m.id, meta.filename, meta.description, meta.status, m.created_at
       ORDER BY m.created_at DESC
-      LIMIT ${ITEMS_PER_PAGE}
-      OFFSET ${offset}
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
     return measurements;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch measurements.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der gefilterten Messungen.');
   }
 }
 
@@ -238,18 +239,75 @@ export async function fetchMetadataPages(query: string) {
 export async function fetchMeasurementsPages(query: string) {
   try {
     const count = await sql`
-      SELECT COUNT(DISTINCT m.id)
-      FROM measurements m
-      LEFT JOIN metadata meta ON m.id = meta.measurement_id
-      WHERE
-        meta.filename ILIKE ${`%${query}%`} OR
-        meta.description ILIKE ${`%${query}%`}
+      SELECT COUNT(*) 
+      FROM metadata 
+      WHERE filename ILIKE ${`%${query}%`}
     `;
 
     const totalPages = Math.ceil(Number(count[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of measurements.');
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Seitenanzahl.');
+  }
+}
+
+export async function fetchMeasurementById(id: string) {
+  try {
+    // Hole die Messung mit Metadaten
+    const measurement = await sql`
+      SELECT 
+        m.id,
+        meta.filename,
+        meta.description,
+        meta.status,
+        m.created_at
+      FROM measurements m
+      LEFT JOIN metadata meta ON m.id = meta.measurement_id
+      WHERE m.id = ${id}
+    `;
+
+    if (!measurement || measurement.length === 0) {
+      return null;
+    }
+
+    // Hole alle Kanäle für diese Messung
+    const channels = await sql`
+      SELECT id, channel_name
+      FROM measurement_channels
+      WHERE measurement_id = ${id}
+    `;
+
+    // Hole alle Messwerte für diese Messung
+    const values = await sql`
+      SELECT mv.seconds_from_start, mv.value, mc.channel_name
+      FROM measurement_values mv
+      JOIN measurement_channels mc ON mv.channel_id = mc.id
+      WHERE mv.measurement_id = ${id}
+      ORDER BY mv.seconds_from_start ASC
+    `;
+
+    // Konvertiere die Werte in das gewünschte Format
+    const channelNames = channels.map(c => c.channel_name);
+    const timeseriesData = values.reduce((acc: any[], curr) => {
+      const existingPoint = acc.find(p => p.seconds_from_start === curr.seconds_from_start);
+      if (existingPoint) {
+        existingPoint[curr.channel_name] = curr.value;
+      } else {
+        const point: any = { seconds_from_start: curr.seconds_from_start };
+        point[curr.channel_name] = curr.value;
+        acc.push(point);
+      }
+      return acc;
+    }, []);
+
+    return {
+      ...measurement[0],
+      channels: channelNames,
+      data: timeseriesData
+    };
+  } catch (error) {
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Messung.');
   }
 }
