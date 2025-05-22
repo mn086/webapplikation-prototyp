@@ -1,14 +1,12 @@
 'use server';
 
 import { z } from 'zod';
-import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import sql from './db';  // Importiere den vorhandenen SQL-Client
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
- 
 export type State = {
   errors?: {
     measurementType?: string[];
@@ -127,7 +125,7 @@ export async function updateMeasurement(id: string, formData: FormData) {
   const validatedFields = UpdateMeasurement.safeParse({
     id,
     filename: formData.get('filename'),
-    description: formData.get('description') || null, // Explizit null für leere Beschreibungen
+    description: formData.get('description') || null,
     status: formData.get('status'),
   });
 
@@ -139,30 +137,54 @@ export async function updateMeasurement(id: string, formData: FormData) {
   }
 
   const { filename, description, status } = validatedFields.data;
+
   try {
-    // Direkt die Metadaten aktualisieren
-    const result = await sql`
-      UPDATE metadata
-      SET filename = ${filename},
-          description = ${description},
-          status = ${status}
-      WHERE measurement_id = ${id}
-      RETURNING *
+    // Prüfe zuerst, ob die Messung existiert
+    const measurement = await sql`
+      SELECT id FROM measurements WHERE id = ${id}
     `;
 
-    if (!result || result.length === 0) {
+    if (!measurement || measurement.length === 0) {
       return {
-        message: 'Metadaten nicht gefunden.'
+        message: 'Messung nicht gefunden.',
       };
     }
-    
-    revalidatePath('/dashboard/measurements');
+
+    // Prüfe, ob Metadaten existieren
+    const existingMetadata = await sql`
+      SELECT measurement_id FROM metadata WHERE measurement_id = ${id}
+    `;
+
+    let result;
+    if (existingMetadata.length === 0) {
+      // Metadaten existieren nicht, erstelle sie
+      result = await sql`
+        INSERT INTO metadata (measurement_id, filename, description, status)
+        VALUES (${id}, ${filename}, ${description}, ${status})
+        RETURNING *
+      `;
+    } else {
+      // Metadaten existieren, aktualisiere sie
+      result = await sql`
+        UPDATE metadata
+        SET filename = ${filename},
+            description = ${description},
+            status = ${status}
+        WHERE measurement_id = ${id}
+        RETURNING *
+      `;
+    }    if (!result || result.length === 0) {
+      return {
+        message: 'Keine Änderungen vorgenommen.',
+      };
+    }    revalidatePath('/dashboard/measurements');
     revalidatePath(`/dashboard/analysis/${id}`);
-    redirect('/dashboard/measurements');
+    return { message: 'Messung erfolgreich aktualisiert.' };
+    
   } catch (error) {
     console.error('Fehler beim Aktualisieren der Messung:', error);
     return {
-      message: 'Datenbankfehler: Messung konnte nicht aktualisiert werden.',
+      message: error instanceof Error ? error.message : 'Datenbankfehler: Messung konnte nicht aktualisiert werden.',
     };
   }
 }
