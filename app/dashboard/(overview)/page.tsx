@@ -1,9 +1,8 @@
 import CardWrapper from '@/app/ui/dashboard/cards';
-import TimeseriesChart from '@/app/ui/dashboard/timeseries-chart';
 import LatestMetadata from '@/app/ui/dashboard/latest-metadata';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
-import { CardsSkeleton, LatestMetadataSkeleton, TimeseriesChartSkeleton } from '@/app/ui/skeletons';
+import { CardsSkeleton, LatestMetadataSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -21,10 +20,7 @@ export default async function Page() {
           <CardWrapper />
         </Suspense>
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <Suspense fallback={<TimeseriesChartSkeleton />}>
-          <TimeseriesChart />
-        </Suspense>
+      <div className="mt-6">
         <Suspense fallback={<LatestMetadataSkeleton />}>
           <LatestMetadata />
         </Suspense>
