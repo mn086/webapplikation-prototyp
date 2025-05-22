@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import sql from './db';  // Importiere den vorhandenen SQL-Client
+import { fetchMeasurementData } from './php-api';
 
 export type State = {
   errors?: {
@@ -15,6 +16,7 @@ export type State = {
     filename?: string[];
     description?: string[];
     status?: string[];
+    id?: string[];
   };
   message?: string | null;
 };
@@ -185,6 +187,93 @@ export async function updateMeasurement(id: string, formData: FormData) {
     console.error('Fehler beim Aktualisieren der Messung:', error);
     return {
       message: error instanceof Error ? error.message : 'Datenbankfehler: Messung konnte nicht aktualisiert werden.',
+    };
+  }
+}
+
+const ImportMeasurement = z.object({
+  id: z.string(),
+});
+
+export async function importMeasurement(prevState: State, formData: FormData) {
+  const validatedFields = ImportMeasurement.safeParse({
+    id: formData.get('measurement'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Bitte wählen Sie eine Messung aus.',
+    };
+  }
+
+  const { id } = validatedFields.data;
+
+  try {
+    // Fetch measurement data from PHP API
+    const measurementData = await fetchMeasurementData(id);
+
+    // Start database import transaction
+    await sql.begin(async (sql) => {
+      // 1. Insert measurement
+      const [measurement] = await sql`
+        INSERT INTO measurements DEFAULT VALUES
+        RETURNING id
+      `;
+      const measurementId = measurement.id;
+
+      // 2. Insert metadata
+      await sql`
+        INSERT INTO metadata (measurement_id, filename, description, status)
+        VALUES (
+          ${measurementId}, 
+          ${measurementData.metadata.filename}, 
+          ${measurementData.metadata.description}, 
+          ${measurementData.metadata.status}
+        )
+      `;      console.log('Importing channels:', measurementData.channels);      // 3. Insert channels and their values
+      for (const channelName of measurementData.channels) {
+        console.log('Processing channel:', channelName);
+        
+        // Create channel (unit is optional in our schema)
+        const [measurementChannel] = await sql`
+          INSERT INTO measurement_channels (measurement_id, channel_name, unit)
+          VALUES (${measurementId}, ${channelName}, NULL)
+          RETURNING id
+        `;
+
+        // Insert all values for this channel from the data array
+        const values = measurementData.data.map(dataPoint => ({
+          measurement_id: measurementId,
+          channel_id: measurementChannel.id,
+          seconds_from_start: dataPoint.seconds_from_start,
+          value: dataPoint[channelName]
+        }));
+
+        await sql`
+          INSERT INTO measurement_values ${sql(
+            values,
+            'measurement_id',
+            'channel_id',
+            'seconds_from_start',
+            'value'
+          )}
+        `;
+      }    });
+    
+    // Nach erfolgreicher Transaktion
+    revalidatePath('/dashboard/analysis');
+    redirect('/dashboard/analysis');
+  } catch (error) {
+    // Wenn es ein Redirect-Fehler ist, werfen wir ihn weiter
+    if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
+      throw error;
+    }
+    
+    // Bei allen anderen Fehlern geben wir eine Fehlermeldung zurück
+    console.error('Fehler beim Importieren der Messung:', error);
+    return {
+      message: error instanceof Error ? error.message : 'Datenbankfehler: Messung konnte nicht importiert werden.',
     };
   }
 }
