@@ -252,7 +252,7 @@ export async function fetchMeasurementsPages(query: string) {
   }
 }
 
-export async function fetchMeasurementById(id: string) {
+export async function fetchMeasurementById(id: string): Promise<MeasurementForm | null> {
   try {
     // Hole die Messung mit Metadaten
     const measurement = await sql`
@@ -299,13 +299,15 @@ export async function fetchMeasurementById(id: string) {
         acc.push(point);
       }
       return acc;
-    }, []);
-
-    return {
-      ...measurement[0],
+    }, []);    const result = {
+      id: measurement[0].id,
+      filename: measurement[0].filename || '',
+      description: measurement[0].description || '',
+      status: measurement[0].status || 'offen',
       channels: channelNames,
       data: timeseriesData
     };
+    return result;
   } catch (error) {
     console.error('Datenbankfehler:', error);
     throw new Error('Fehler beim Laden der Messung.');
