@@ -1,7 +1,10 @@
-// Loading animation
+// Shimmer-Animation für Lade-Zustände
+// Erzeugt einen gleitenden Schimmer-Effekt über die Komponenten während des Ladens
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
+// Skeleton für eine einzelne Statistik-Karte
+// Zeigt einen Platzhalter für eine Statistik-Karte mit Icon und Wert an
 export function CardSkeleton() {
   return (
     <div
@@ -18,10 +21,11 @@ export function CardSkeleton() {
   );
 }
 
+// Skeleton für eine Gruppe von vier Statistik-Karten
+// Wird im Dashboard verwendet, um die Lade-Animation für alle Karten anzuzeigen
 export function CardsSkeleton() {
   return (
     <>
-      <CardSkeleton />
       <CardSkeleton />
       <CardSkeleton />
       <CardSkeleton />
@@ -29,6 +33,8 @@ export function CardsSkeleton() {
   );
 }
 
+// Skeleton für das Zeitreihen-Diagramm
+// Zeigt einen Platzhalter für das Diagramm mit Überschrift und Legende an
 export function TimeseriesChartSkeleton() {
   return (
     <div className={`${shimmer} relative w-full overflow-hidden md:col-span-4`}>
@@ -44,24 +50,32 @@ export function TimeseriesChartSkeleton() {
   );
 }
 
+// Haupt-Skeleton für das gesamte Dashboard
+// Kombiniert alle Skeleton-Komponenten für die Dashboard-Ansicht
 export default function DashboardSkeleton() {
   return (
     <>
+      {/* Überschrift-Skeleton */}
       <div
         className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`}
       />
+      {/* Grid für Statistik-Karten */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <CardSkeleton />
         <CardSkeleton />
         <CardSkeleton />
         <CardSkeleton />
-      </div>      <div className="mt-6">
-        <LatestMetadataSkeleton />
+      </div>      
+      {/* Bereich für neueste Messdaten */}
+      <div className="mt-6">
+        <LatestMeasurementsSkeleton />
       </div>
     </>
   );
 }
 
+// Skeleton für eine einzelne Tabellenzeile
+// Zeigt Platzhalter für alle Spalten einer Messungstabelle an
 export function TableRowSkeleton() {
   return (
     <tr className="w-full border-b border-gray-100 last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
@@ -99,15 +113,19 @@ export function TableRowSkeleton() {
   );
 }
 
+// Skeleton für die mobile Ansicht einer Messung
+// Zeigt einen Platzhalter für eine Messung in der mobilen Darstellung
 export function MeasurementMobileSkeleton() {
   return (
     <div className="mb-2 w-full rounded-md bg-white p-4">
+      {/* Oberer Bereich mit Titel und Status */}
       <div className="flex items-center justify-between border-b border-gray-100 pb-8">
         <div className="flex items-center">
           <div className="h-6 w-16 rounded bg-gray-100"></div>
         </div>
         <div className="h-6 w-16 rounded bg-gray-100"></div>
       </div>
+      {/* Unterer Bereich mit Zusatzinfos und Aktionsbuttons */}
       <div className="flex w-full items-center justify-between pt-4">
         <div>
           <div className="h-6 w-24 rounded bg-gray-100"></div>
@@ -121,6 +139,8 @@ export function MeasurementMobileSkeleton() {
   );
 }
 
+// Skeleton für die komplette Messungstabelle
+// Enthält sowohl die mobile als auch die Desktop-Ansicht der Tabelle
 export function MeasurementsTableSkeleton() {
   return (
     <div className="mt-6 flow-root">
@@ -172,7 +192,9 @@ export function MeasurementsTableSkeleton() {
   );
 }
 
-export function LatestMetadataSkeleton() {
+// Skeleton für die neuesten Messungen
+// Zeigt Platzhalter für die letzten 5 Messungen im Dashboard an
+export function LatestMeasurementsSkeleton() {
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
@@ -199,6 +221,8 @@ export function LatestMetadataSkeleton() {
   );
 }
 
+// Skeleton für eine allgemeine Tabelle
+// Kann für verschiedene Tabellen-Ansichten verwendet werden
 export function TableSkeleton() {
   return (
     <div className="mt-6 flow-root">
