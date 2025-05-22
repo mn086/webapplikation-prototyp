@@ -8,13 +8,21 @@ export const metadata: Metadata = {
   title: 'Messung analysieren',
 };
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const id = params.id;  const measurement = await fetchMeasurementById(id);
+export default async function Page(props: { params: Promise<{ id: string }> }) {  const params = await props.params;
+  const id = params.id;
+  const rawMeasurement = await fetchMeasurementById(id);
 
-  if (!measurement) {
+  if (!rawMeasurement) {
     notFound();
   }
+
+  const measurement = {
+    ...rawMeasurement,
+    id,
+    filename: rawMeasurement.filename || '',
+    description: rawMeasurement.description || '',
+    status: rawMeasurement.status || 'offen'
+  };
   
   return (
     <main>      <Breadcrumbs

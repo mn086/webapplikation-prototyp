@@ -1,16 +1,11 @@
 import postgres from 'postgres';
 
 // Konfiguration für die Neon Postgres-Verbindung
-const sql = postgres({
-    host: process.env.POSTGRES_HOST,
-    database: process.env.POSTGRES_DATABASE,
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    port: 5432,
-    ssl: true,
+const sql = postgres(process.env.POSTGRES_URL!, {
+    ssl: 'require',
     max: 10,
     idle_timeout: 20,
-    connect_timeout: 10,
+    connect_timeout: 30,
     connection: {
         options: '-c timezone=UTC'
     },
