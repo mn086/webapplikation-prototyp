@@ -1,0 +1,45 @@
+{
+    "id": "measurement_003",
+    "metadata": {
+        "filename": "multi_sensor_messung.json",
+        "description": "Mehrkanalige Messung mit verschiedenen Sensoren",
+        "status": "offen",
+        "created_at": "2024-05-22T09:15:00Z"
+    },
+    "channels": [
+        "temperature",
+        "humidity",
+        "pressure",
+        "co2_level"
+    ],
+    "data": [
+        {
+            "seconds_from_start": 0,
+            "temperature": 21.5,
+            "humidity": 45.0,
+            "pressure": 1013.2,
+            "co2_level": 400.0
+        },
+        {
+            "seconds_from_start": 300,
+            "temperature": 21.8,
+            "humidity": 46.2,
+            "pressure": 1013.0,
+            "co2_level": 425.0
+        },
+        {
+            "seconds_from_start": 600,
+            "temperature": 22.1,
+            "humidity": 47.0,
+            "pressure": 1012.8,
+            "co2_level": 450.0
+        },
+        {
+            "seconds_from_start": 900,
+            "temperature": 22.3,
+            "humidity": 47.5,
+            "pressure": 1012.5,
+            "co2_level": 475.0
+        }
+    ]
+}

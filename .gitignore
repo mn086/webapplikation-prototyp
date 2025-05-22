@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# apache logs
+apache-php-measurements/logs/
+apache-php-measurements/logs/*

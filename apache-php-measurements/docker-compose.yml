@@ -1,0 +1,37 @@
+# Docker Compose Konfiguration für den Apache PHP Server zur Auslieferung der Messdaten
+services:
+  # Apache PHP Service Definition
+  apache-php:
+    # Build-Konfiguration
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Name des Containers
+    container_name: apache-php-measurements
+    # Port-Mapping: Externer Port 8090 wird auf internen Port 80 gemappt
+    ports:
+      - "8090:80"    # Volume-Mounts für Webdateien und Logs
+    volumes:
+      - ./measurements-api:/var/www/html    # API und Messdaten
+      - ./logs:/var/log/apache2            # Apache Logs
+    # Umgebungsvariablen für PHP und Apache
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html  # Wurzelverzeichnis
+      - PHP_MEMORY_LIMIT=256M               # PHP Speicherlimit
+      - MAX_UPLOAD_SIZE=64M                 # Upload Limit
+    # Container-Neustart-Verhalten
+    restart: unless-stopped
+    # Netzwerk-Konfiguration (wird aktuell nicht benötigt, da keine DB-Verbindung)
+    networks:
+      - measurements-network
+    # Gesundheits-Check: Prüft ob der API-Endpoint erreichbar ist
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/measurements/api/list.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Definition des Docker-Netzwerks
+networks:
+  measurements-network:
+    driver: bridge
