@@ -1,5 +1,5 @@
 import { UpdateAnalysis, DeleteAnalysis } from '@/app/ui/analysis/buttons';
-import MeasurementStatus from '@/app/ui/measurements/status';
+import MeasurementStatus from '@/app/ui/analysis/status';
 import { formatDateToLocal } from '@/app/lib/utils';
 import { fetchFilteredMeasurements } from '@/app/lib/data';
 

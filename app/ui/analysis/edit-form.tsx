@@ -1,5 +1,7 @@
+// Markiert dies als Client-Komponente
 'use client';
 
+// Importiere benötigte Komponenten und Typen
 import { MeasurementForm, TimeseriesDataPoint } from '@/app/lib/definitions';
 import { updateMeasurement } from '@/app/lib/actions';
 import { Button } from '@/app/ui/button';
@@ -13,25 +15,30 @@ import Link from 'next/link';
 import TimeseriesChartClient from '@/app/ui/dashboard/timeseries-chart-client';
 import { useActionState } from 'react';
 
+// Definiere den Typ für den Formularstatus mit Fehlerhandling
+// Definiere den Typ für den Formularstatus mit Fehlerhandling und Statusnachrichten
 type State = {
   errors?: {
-    filename?: string[];
-    description?: string[];
-    status?: string[];
+    filename?: string[];      // Fehlermeldungen für den Dateinamen
+    description?: string[];   // Fehlermeldungen für die Beschreibung
+    status?: string[];        // Fehlermeldungen für den Status
   };
-  message: string | null;
+  message: string | null;     // Allgemeine Statusnachricht
 };
 
+// Hauptkomponente für das Bearbeitungsformular einer Analyse
 export default function EditAnalysisForm({
   measurement,
 }: {
   measurement: MeasurementForm;
 }) {  
+  // Initialisiere den Formularstatus
   const initialState: State = { message: null, errors: {} };
-  // Create an action that takes state and form data
+
+  // Funktion zur Verarbeitung des Formulars mit Validierung
   const updateMeasurementWithId = async (prevState: State, formData: FormData) => {
     try {
-      // Validiere die Formulardaten vor dem Senden
+      // Prüfe ob ein Dateiname angegeben wurde
       if (!formData.get('filename')) {
         return {
           errors: {
@@ -41,6 +48,7 @@ export default function EditAnalysisForm({
         };
       }
 
+      // Prüfe ob ein Status ausgewählt wurde
       if (!formData.get('status')) {
         return {
           errors: {
@@ -50,6 +58,7 @@ export default function EditAnalysisForm({
         };
       }
 
+      // Führe die Aktualisierung durch
       const result = await updateMeasurement(measurement.id, formData);
       return {
         ...prevState,
@@ -63,23 +72,20 @@ export default function EditAnalysisForm({
     }
   };
 
-  const [state, formAction] = useActionState(updateMeasurementWithId, initialState);// Convert data to expected format for TimeseriesChartClient
+  // Verbinde Formularstatus mit der Aktualisierungsfunktion
+  const [state, formAction] = useActionState(updateMeasurementWithId, initialState);
+  // Bereite die Daten für die Diagrammdarstellung vor
   const chartData = measurement.data.map(point => {
+    // Erstelle einen Zeitstempel basierend auf seconds_from_start
     const timestamp = new Date();
-    timestamp.setSeconds(timestamp.getSeconds() - (measurement.data.length - measurement.data.indexOf(point)));
+    timestamp.setSeconds(timestamp.getSeconds() - point.seconds_from_start);
     
-    // Erstelle ein Objekt mit allen Kanälen als null
-    const channelData = {
-      channel1: null,
-      channel2: null,
-      channel3: null
-    };
+    // Erstelle dynamisch ein Objekt mit allen Kanälen
+    const channelData: { [key: string]: number | null } = {};
     
-    // Setze die tatsächlichen Werte für die vorhandenen Kanäle
-    measurement.channels.forEach((channel, index) => {
-      if (index < 3) { // Wir unterstützen maximal 3 Kanäle
-        channelData[`channel${index + 1}` as keyof typeof channelData] = point[channel] ?? null;
-      }
+    // Weise die Messwerte den entsprechenden Kanälen zu
+    measurement.channels.forEach((channel) => {
+      channelData[channel] = point[channel] ?? null;
     });
     
     return {
@@ -88,10 +94,12 @@ export default function EditAnalysisForm({
     };
   }) as TimeseriesDataPoint[];
 
+  // Render das Formular mit allen Eingabefeldern
   return (
     <form action={formAction}>
+      {/* Hauptbereich des Formulars */}
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Timeseries Chart */}
+        {/* Diagrammbereich */}
         <div className="mb-8">
           <h2 className="mb-4 text-lg font-semibold">Messdaten Visualisierung</h2>
           <div className="rounded-md border border-gray-200 bg-white p-4">
@@ -99,7 +107,7 @@ export default function EditAnalysisForm({
           </div>
         </div>
 
-        {/* Measurement File Name */}
+        {/* Eingabefeld für den Dateinamen */}
         <div className="mb-4">
           <label htmlFor="filename" className="mb-2 block text-sm font-medium">
             Name der Messung
@@ -116,6 +124,7 @@ export default function EditAnalysisForm({
             />
             <DocumentTextIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
+          {/* Fehleranzeige für den Dateinamen */}
           {state.errors?.filename && (
             <div id="filename-error" aria-live="polite" className="mt-2 text-sm text-red-500">
               {state.errors.filename.map((error: string) => (
@@ -125,7 +134,7 @@ export default function EditAnalysisForm({
           )}
         </div>
 
-        {/* Description */}
+        {/* Eingabefeld für die Beschreibung */}
         <div className="mb-4">
           <label htmlFor="description" className="mb-2 block text-sm font-medium">
             Beschreibung
@@ -142,6 +151,7 @@ export default function EditAnalysisForm({
             />
             <InformationCircleIcon className="pointer-events-none absolute left-3 top-3 h-[18px] w-[18px] text-gray-500 peer-focus:text-gray-900" />
           </div>
+          {/* Fehleranzeige für die Beschreibung */}
           {state.errors?.description && (
             <div id="description-error" aria-live="polite" className="mt-2 text-sm text-red-500">
               {state.errors.description.map((error: string) => (
@@ -151,13 +161,14 @@ export default function EditAnalysisForm({
           )}
         </div>
 
-        {/* Status */}
+        {/* Auswahlfeld für den Status */}
         <fieldset>
           <legend className="mb-2 block text-sm font-medium">
             Status
           </legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
+              {/* Option: Offen */}
               <div className="flex items-center">
                 <input
                   id="offen"
@@ -175,6 +186,7 @@ export default function EditAnalysisForm({
                   Offen <ClockIcon className="h-4 w-4" />
                 </label>
               </div>
+              {/* Option: Validiert */}
               <div className="flex items-center">
                 <input
                   id="validiert"
@@ -194,6 +206,7 @@ export default function EditAnalysisForm({
               </div>
             </div>
           </div>
+          {/* Fehleranzeige für den Status */}
           {state.errors?.status && (
             <div id="status-error" aria-live="polite" className="mt-2 text-sm text-red-500">
               {state.errors.status.map((error: string) => (
@@ -204,16 +217,20 @@ export default function EditAnalysisForm({
         </fieldset>
       </div>
 
+      {/* Aktionsbuttons */}
       <div className="mt-6 flex justify-end gap-4">
+        {/* Abbrechen-Button mit Link zur Übersicht */}
         <Link
-          href="/dashboard/measurements"
+          href="/dashboard/analysis"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Abbrechen
         </Link>
+        {/* Speichern-Button */}
         <Button type="submit">Änderungen speichern</Button>
       </div>
 
+      {/* Fehleranzeige */}
       {state.message && (
         <div aria-live="polite" className="mt-2 text-sm text-red-500">
           <p>{state.message}</p>

@@ -1,13 +1,16 @@
 'use server';
 
+// Importiere benötigte Abhängigkeiten
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import sql from './db';  // Importiere den vorhandenen SQL-Client
+import sql from './db';
 import { fetchMeasurementData } from './php-api';
 
+// Definiere den Typ für den Formularzustand
+// Enthält mögliche Fehler für jedes Formularfeld und eine optionale Nachricht
 export type State = {
   errors?: {
     measurementType?: string[];
@@ -21,6 +24,8 @@ export type State = {
   message?: string | null;
 };
 
+// Schema für die Erstellung einer neuen Analyse
+// Validiert die Eingabefelder mit Zod
 const CreateAnalysis = z.object({
   measurementType: z.enum(['temperature', 'humidity', 'pressure'], {
     invalid_type_error: 'Bitte wählen Sie einen Messungstyp.',
@@ -33,13 +38,16 @@ const CreateAnalysis = z.object({
   }),
 });
 
+// Erstellt eine neue Analyse basierend auf den Formulardaten
 export async function createAnalysis(prevState: State, formData: FormData) {
+  // Validiere die Eingabefelder
   const validatedFields = CreateAnalysis.safeParse({
     measurementType: formData.get('measurementType'),
     timeRange: formData.get('timeRange'),
     analysisType: formData.get('analysisType'),
   });
 
+  // Wenn die Validierung fehlschlägt, gib Fehlermeldungen zurück
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -50,11 +58,13 @@ export async function createAnalysis(prevState: State, formData: FormData) {
   const { measurementType, timeRange, analysisType } = validatedFields.data;
 
   try {
+    // Füge die neue Analyse in die Datenbank ein
     await sql`
       INSERT INTO analyses (measurement_type, time_range, analysis_type, created_at)
       VALUES (${measurementType}, ${timeRange}, ${analysisType}, NOW())
     `;
     
+    // Aktualisiere die Seite und leite um
     revalidatePath('/dashboard/analysis');
     redirect('/dashboard/analysis');
   } catch (error) {
@@ -64,6 +74,7 @@ export async function createAnalysis(prevState: State, formData: FormData) {
   }
 }
 
+// Authentifiziert einen Benutzer mit den Anmeldedaten
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
@@ -83,35 +94,23 @@ export async function authenticate(
   }
 }
 
+// Löscht eine Messung und alle zugehörigen Daten
 export async function deleteMeasurement(id: string) {
   try {
-    await sql`
-      DELETE FROM measurement_values
-      WHERE measurement_id = ${id}
-    `;
-    
-    await sql`
-      DELETE FROM measurement_channels
-      WHERE measurement_id = ${id}
-    `;
+    // Lösche alle abhängigen Daten in der richtigen Reihenfolge
+    await sql`DELETE FROM measurement_values WHERE measurement_id = ${id}`;
+    await sql`DELETE FROM measurement_channels WHERE measurement_id = ${id}`;
+    await sql`DELETE FROM metadata WHERE measurement_id = ${id}`;
+    await sql`DELETE FROM measurements WHERE id = ${id}`;
 
-    await sql`
-      DELETE FROM metadata
-      WHERE measurement_id = ${id}
-    `;
-
-    await sql`
-      DELETE FROM measurements
-      WHERE id = ${id}
-    `;
-
-    revalidatePath('/dashboard/measurements');
+    revalidatePath('/dashboard/analysis');
     return { message: 'Messung erfolgreich gelöscht.' };
   } catch (error) {
     return { message: 'Fehler beim Löschen der Messung.' };
   }
 }
 
+// Schema für die Aktualisierung einer Messung
 const UpdateMeasurement = z.object({
   id: z.string(),
   filename: z.string({
@@ -123,7 +122,9 @@ const UpdateMeasurement = z.object({
   }),
 });
 
+// Aktualisiert die Metadaten einer Messung
 export async function updateMeasurement(id: string, formData: FormData) {
+  // Validiere die Eingabefelder
   const validatedFields = UpdateMeasurement.safeParse({
     id,
     filename: formData.get('filename'),
@@ -147,9 +148,7 @@ export async function updateMeasurement(id: string, formData: FormData) {
     `;
 
     if (!measurement || measurement.length === 0) {
-      return {
-        message: 'Messung nicht gefunden.',
-      };
+      return { message: 'Messung nicht gefunden.' };
     }
 
     // Prüfe, ob Metadaten existieren
@@ -158,15 +157,14 @@ export async function updateMeasurement(id: string, formData: FormData) {
     `;
 
     let result;
+    // Erstelle oder aktualisiere Metadaten je nach Existenz
     if (existingMetadata.length === 0) {
-      // Metadaten existieren nicht, erstelle sie
       result = await sql`
         INSERT INTO metadata (measurement_id, filename, description, status)
         VALUES (${id}, ${filename}, ${description}, ${status})
         RETURNING *
       `;
     } else {
-      // Metadaten existieren, aktualisiere sie
       result = await sql`
         UPDATE metadata
         SET filename = ${filename},
@@ -175,11 +173,14 @@ export async function updateMeasurement(id: string, formData: FormData) {
         WHERE measurement_id = ${id}
         RETURNING *
       `;
-    }    if (!result || result.length === 0) {
-      return {
-        message: 'Keine Änderungen vorgenommen.',
-      };
-    }    revalidatePath('/dashboard/measurements');
+    }
+
+    if (!result || result.length === 0) {
+      return { message: 'Keine Änderungen vorgenommen.' };
+    }
+
+    // Aktualisiere die betroffenen Seiten
+    revalidatePath('/dashboard/analysis');
     revalidatePath(`/dashboard/analysis/${id}`);
     return { message: 'Messung erfolgreich aktualisiert.' };
     
@@ -191,11 +192,14 @@ export async function updateMeasurement(id: string, formData: FormData) {
   }
 }
 
+// Schema für den Import einer Messung
 const ImportMeasurement = z.object({
   id: z.string(),
 });
 
+// Importiert eine Messung aus der PHP-API in die lokale Datenbank
 export async function importMeasurement(prevState: State, formData: FormData) {
+  // Validiere die Eingabe
   const validatedFields = ImportMeasurement.safeParse({
     id: formData.get('measurement'),
   });
@@ -210,19 +214,19 @@ export async function importMeasurement(prevState: State, formData: FormData) {
   const { id } = validatedFields.data;
 
   try {
-    // Fetch measurement data from PHP API
+    // Hole die Messungsdaten von der PHP-API
     const measurementData = await fetchMeasurementData(id);
 
-    // Start database import transaction
+    // Starte eine Datenbank-Transaktion für den Import
     await sql.begin(async (sql) => {
-      // 1. Insert measurement
+      // 1. Erstelle den Messungsdatensatz
       const [measurement] = await sql`
         INSERT INTO measurements DEFAULT VALUES
         RETURNING id
       `;
       const measurementId = measurement.id;
 
-      // 2. Insert metadata
+      // 2. Füge die Metadaten hinzu
       await sql`
         INSERT INTO metadata (measurement_id, filename, description, status)
         VALUES (
@@ -231,18 +235,18 @@ export async function importMeasurement(prevState: State, formData: FormData) {
           ${measurementData.metadata.description}, 
           ${measurementData.metadata.status}
         )
-      `;      console.log('Importing channels:', measurementData.channels);      // 3. Insert channels and their values
+      `;
+
+      // 3. Importiere alle Kanäle und ihre Werte
       for (const channelName of measurementData.channels) {
-        console.log('Processing channel:', channelName);
-        
-        // Create channel (unit is optional in our schema)
+        // Erstelle den Kanal
         const [measurementChannel] = await sql`
           INSERT INTO measurement_channels (measurement_id, channel_name, unit)
           VALUES (${measurementId}, ${channelName}, NULL)
           RETURNING id
         `;
 
-        // Insert all values for this channel from the data array
+        // Bereite die Messwerte für den Massenimport vor
         const values = measurementData.data.map(dataPoint => ({
           measurement_id: measurementId,
           channel_id: measurementChannel.id,
@@ -250,6 +254,7 @@ export async function importMeasurement(prevState: State, formData: FormData) {
           value: dataPoint[channelName]
         }));
 
+        // Füge alle Messwerte für diesen Kanal ein
         await sql`
           INSERT INTO measurement_values ${sql(
             values,
@@ -259,18 +264,19 @@ export async function importMeasurement(prevState: State, formData: FormData) {
             'value'
           )}
         `;
-      }    });
+      }
+    });
     
-    // Nach erfolgreicher Transaktion
+    // Nach erfolgreicher Transaktion: Aktualisiere und leite um
     revalidatePath('/dashboard/analysis');
     redirect('/dashboard/analysis');
   } catch (error) {
-    // Wenn es ein Redirect-Fehler ist, werfen wir ihn weiter
+    // Behandle Weiterleitungsfehler separat
     if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
       throw error;
     }
     
-    // Bei allen anderen Fehlern geben wir eine Fehlermeldung zurück
+    // Protokolliere andere Fehler und gib eine Fehlermeldung zurück
     console.error('Fehler beim Importieren der Messung:', error);
     return {
       message: error instanceof Error ? error.message : 'Datenbankfehler: Messung konnte nicht importiert werden.',
