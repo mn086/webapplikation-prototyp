@@ -1,7 +1,10 @@
 <?php
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
+
+// Setze UTF-8 Kodierung für PHP
+mb_internal_encoding('UTF-8');
 
 $id = $_GET['id'] ?? null;
 
@@ -27,4 +30,4 @@ if ($content === false) {
     exit;
 }
 
-echo $content;
+echo json_encode(json_decode($content), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

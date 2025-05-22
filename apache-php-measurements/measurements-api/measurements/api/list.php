@@ -1,7 +1,10 @@
 <?php
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
+
+// Setze UTF-8 Kodierung für PHP
+mb_internal_encoding('UTF-8');
 
 $measurementsDir = dirname(__DIR__);
 $files = glob($measurementsDir . '/*.json');
