@@ -3,13 +3,11 @@
 
 // Importiere benötigte Komponenten und Funktionen
 import { Card, Title, LineChart } from '@tremor/react';
-import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
 
 // Definiere den Typ für einen Datenpunkt in der Zeitreihe
-// Enthält einen Zeitstempel und beliebig viele Kanalwerte
+// Enthält die Sekunden seit Messbeginn und beliebig viele Kanalwerte
 type TimeseriesDataPoint = {
-  timestamp: string;
+  seconds: number;
   [key: string]: string | number | null;  // Dynamische Kanäle mit flexiblen Datentypen
 };
 
@@ -27,9 +25,9 @@ export default function TimeseriesChartClient({ data }: { data: TimeseriesDataPo
       <LineChart
         className="mt-6 h-[350px]"
         data={data}
-        index="timestamp"
-        // Extrahiere alle Kanalnamen aus den Daten (außer 'timestamp')
-        categories={Object.keys(data[0] || {}).filter(key => key !== 'timestamp')}
+        index="seconds"
+        // Extrahiere alle Kanalnamen aus den Daten (außer 'seconds')
+        categories={Object.keys(data[0] || {}).filter(key => key !== 'seconds')}
         // Farbpalette für die verschiedenen Kanäle
         colors={['indigo', 'cyan', 'orange', 'green', 'red', 'purple', 'yellow']}
         yAxisWidth={60}
@@ -41,12 +39,12 @@ export default function TimeseriesChartClient({ data }: { data: TimeseriesDataPo
         // Angepasster Tooltip für Details beim Hovern
         customTooltip={({ payload }) => {
           if (!payload?.[0]?.payload) return null;
-          const timestamp = new Date(payload[0].payload.timestamp);
+          const seconds = payload[0].payload.seconds;
           return (
             <div className="p-2 bg-white rounded shadow">
-              {/* Zeige formatiertes Datum und Uhrzeit */}
+              {/* Zeige Zeit in Sekunden */}
               <div className="font-medium">
-                {format(timestamp, 'PPpp', { locale: de })}
+                Zeit: {seconds} s
               </div>
               {/* Zeige Werte aller Kanäle mit entsprechender Farbe */}
               {payload.map((item: any) => (

@@ -83,12 +83,9 @@ export default function EditAnalysisForm({
 
   // Verbinde Formularstatus mit der Aktualisierungsfunktion
   const [state, formAction] = useActionState(updateMeasurementWithId, initialState);
+  
   // Bereite die Daten für die Diagrammdarstellung vor
   const chartData = measurement.data.map(point => {
-    // Erstelle einen Zeitstempel basierend auf seconds_from_start
-    const timestamp = new Date();
-    timestamp.setSeconds(timestamp.getSeconds() - point.seconds_from_start);
-    
     // Erstelle dynamisch ein Objekt mit allen Kanälen
     const channelData: { [key: string]: number | null } = {};
     
@@ -98,7 +95,7 @@ export default function EditAnalysisForm({
     });
     
     return {
-      timestamp: timestamp.toISOString(),
+      seconds: point.seconds_from_start,
       ...channelData
     };
   }) as TimeseriesDataPoint[];

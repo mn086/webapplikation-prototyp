@@ -24,7 +24,6 @@ export type MeasurementForm = {
 
 // Typ für einen einzelnen Datenpunkt in der Zeitreihenvisualisierung
 export type TimeseriesDataPoint = {
-  timestamp: string;                           // ISO-formatierter Zeitstempel für die Darstellung
-  seconds_from_start: number;                  // Relative Zeit seit Messbeginn
-  [key: string]: string | number | null;      // Dynamische Kanalwerte mit flexiblen Datentypen
+  seconds: number;                           // Zeit in Sekunden seit Messbeginn
+  [key: string]: string | number | null;     // Dynamische Kanalwerte mit flexiblen Datentypen
 };
