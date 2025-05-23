@@ -4,11 +4,11 @@ import { Metadata } from 'next';
  
 export const metadata: Metadata = {
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Acme Dashboard',
+    template: '%s | HdM Zeitreihen-Dashboard',
+    default: 'HdM Zeitreihen-Dashboard',
   },
-  description: 'The official Next.js Learn Dashboard built with App Router.',
-  metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
+  description: 'Dashboard zur Visualisierung und Analyse von Zeitreihendaten, entwickelt im Rahmen des Moduls Web Technologies & Analytics.',
+  metadataBase: new URL('http://localhost:3000'),
 };
 
 export default function RootLayout({
