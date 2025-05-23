@@ -13,31 +13,53 @@ Diese Anwendung ist ein Dashboard zur Visualisierung von Zeitreihendaten, das mi
 
 ```
 app/
-├── api/                      # API-Routes
-│   ├── init/                # Endpunkt für Datenbankinitialisierung
-│   ├── seed/                # Endpunkt zum Befüllen der DB mit Testdaten
-│   └── test-data/          # Endpunkt zum Abfragen der Daten
-├── dashboard/               # Dashboard-Bereich
-│   └── (overview)/         # Übersichtsseite mit Zeitreihen-Visualisierung
-├── lib/                    # Hilfsfunktionen & Definitionen
-│   ├── actions.ts          # Server Actions & Formvalidierung
-│   ├── data.ts            # Datenzugriffsschicht (Data Access Layer)
-│   ├── db.ts              # Zentrale Datenbankverbindung
-│   ├── schema.sql         # Datenbankschema-Definition
-│   └── seed.sql           # SQL für Testdaten
-│   ├── data.ts      # Datenbankzugriffe
-│   ├── db.ts        # Datenbankanbindung und Typen
-│   ├── definitions.ts # Typdefinitionen
-│   └── schema.sql   # Datenbankschema
-├── login/           # Login-Seite mit E-Mail/Passwort
-└── ui/              # UI-Komponenten
-    ├── dashboard/   # Dashboard-spezifische Komponenten
-    │   ├── cards.tsx
-    │   ├── nav-links.tsx
-    │   ├── revenue-chart.tsx  # (wird zu timeseries-chart.tsx)
-    │   └── sidenav.tsx
-    ├── customers/   # (wird angepasst)
-    └── invoices/    # (wird angepasst)
+├── api/                     # Next.js API-Routes
+│   ├── check-status/       # Statusabfrage der Datenbank
+│   ├── check-tables/       # Überprüfung der Datenbankstruktur
+│   ├── check-values/       # Überprüfung der Messwerte
+│   ├── create-indices/     # Indexerstellung
+│   ├── init/              # Datenbankinitialisierung
+│   ├── seed/              # Testdaten einfügen
+│   ├── test-data/         # Testdatenabfrage
+│   └── test-update/       # Update-Tests
+├── dashboard/              # Dashboard-Bereich
+│   ├── layout.tsx        # Gemeinsames Layout für Dashboard
+│   ├── (overview)/       # Übersichts-Route
+│   │   ├── loading.tsx  # Lade-Animation
+│   │   └── page.tsx     # Dashboard-Hauptseite mit Statistiken
+│   └── analysis/        # Analyse-Route
+│       ├── error.tsx    # Fehlerbehandlung
+│       ├── page.tsx     # Messungsübersicht
+│       ├── [id]/        # Dynamische Messungs-Route
+│       │   └── edit/    # Bearbeitung einer Messung
+│       │       ├── not-found.tsx  # 404-Seite
+│       │       └── page.tsx       # Bearbeitungsformular
+│       └── create/      # Neue Messung erstellen
+│           └── page.tsx # Erstellungsformular
+├── lib/                   # Hilfsfunktionen & Definitionen
+│   ├── actions.ts         # Server Actions
+│   ├── data.ts           # Datenbankzugriffe
+│   ├── db.ts             # Datenbankverbindung
+│   ├── definitions.ts    # Typdefinitionen
+│   ├── php-api.ts        # PHP-API Integration
+│   ├── schema.sql        # Datenbankschema
+│   └── seed.sql          # Testdaten
+├── login/                 # Login-Bereich
+└── ui/                    # UI-Komponenten
+    ├── analysis/         # Analyse-Komponenten
+    ├── branding/         # Branding-Elemente
+    ├── dashboard/        # Dashboard-Komponenten
+    └── measurements/     # Messungs-Komponenten
+
+apache-php-measurements/   # Apache PHP Backend
+├── docker-compose.yml    # Docker-Konfiguration
+├── Dockerfile           # Apache/PHP Docker-Image
+└── measurements-api/    # PHP REST-API
+    ├── measurements/   # Messdaten (JSON)
+    └── api/           # PHP-Endpunkte
+        ├── count.php  # Anzahl der Messungen
+        ├── get.php    # Einzelne Messung abrufen
+        └── list.php   # Liste aller Messungen
 ```
 
 ## Installation und Start
@@ -55,10 +77,12 @@ app/
 
 3. `.env.local` Datei im Projektroot erstellen:
    ```env
-   POSTGRES_HOST=dein-postgres-host
-   POSTGRES_DATABASE=deine-postgres-datenbank
-   POSTGRES_USER=dein-postgres-user
-   POSTGRES_PASSWORD=dein-postgres-password
+   # Datenbankverbindung (mit Connection Pooling)
+   POSTGRES_URL=postgres://benutzer:passwort@host:port/datenbankname?sslmode=require
+
+   # NextAuth Authentifizierungsschlüssel
+   # Generieren Sie einen neuen Schlüssel auf https://generate-secret.vercel.app/32
+   AUTH_SECRET=ihr-auth-secret-schlüssel
    ```
 
 4. Datenbank initialisieren:
@@ -91,6 +115,58 @@ app/
 - Formvalidierung: Zod
 - Charting: Tremor (geplant)
 - Package Manager: pnpm
+
+## Umgebungsvariablen
+
+Die Anwendung benötigt zwei essenzielle Umgebungsvariablen, die in der `.env.local` Datei konfiguriert werden:
+
+1. `POSTGRES_URL`: Die vollständige Verbindungs-URL zur PostgreSQL-Datenbank
+   - Verwendet Connection Pooling via pgBouncer für optimale Leistung
+   - Format: `postgres://benutzer:passwort@host:port/datenbankname?sslmode=require`
+
+2. `AUTH_SECRET`: Sicherheitsschlüssel für die NextAuth-Authentifizierung
+   - Muss ein sicherer, zufällig generierter String sein
+   - Kann auf https://generate-secret.vercel.app/32 generiert werden
+   - Darf nicht im Git-Repository gespeichert werden
+
+Hinweis: Die `.env.local` Datei enthält sensitive Daten und ist bereits in `.gitignore` aufgeführt. Stellen Sie sicher, dass Sie diese Datei niemals in ein öffentliches Repository pushen.
+
+## Apache PHP API
+
+Die Anwendung enthält ein separates PHP-Backend, das als Datenquelle für neu bereitgestellte Messdaten dient. Dieses Backend läuft in einem Docker-Container und stellt eine REST-API bereit.
+
+### API-Endpunkte
+
+1. `GET /measurements/api/list.php`
+   - Listet alle verfügbaren Messungen auf
+   - Rückgabe: JSON-Array mit ID, Dateiname und Pfad
+
+2. `GET /measurements/api/get.php?id={id}`
+   - Lädt die detaillierten Daten einer spezifischen Messung
+   - Parameter: `id` = Messungs-ID
+   - Rückgabe: JSON mit Metadaten, Kanälen und Messwerten
+
+3. `GET /measurements/api/count.php`
+   - Gibt die Gesamtanzahl verfügbarer Messungen zurück
+   - Rückgabe: JSON mit Anzahl der Messungen
+
+### Integration
+
+Die PHP-API wird über `lib/php-api.ts` in die Next.js-Anwendung integriert. Diese Schnittstelle:
+- Kommuniziert mit dem Apache/PHP-Backend
+- Konvertiert die Daten in TypeScript-Typen
+- Ermöglicht den Import von Messdaten in die PostgreSQL-Datenbank
+
+### Docker-Setup
+
+Das PHP-Backend wird über Docker bereitgestellt:
+```bash
+cd apache-php-measurements
+docker-compose up -d
+```
+- Apache läuft auf Port 8090
+- Logs werden in `logs/` gespeichert
+- Messdaten liegen als JSON-Dateien in `measurements/`
 
 ## Datenbankstruktur & Wichtige Dateien
 
