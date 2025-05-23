@@ -14,10 +14,9 @@ import clsx from 'clsx';
 
 // Liste der Navigationslinks für die Seitenleiste
 // Bei größeren Anwendungen würde dies in einer Datenbank gespeichert werden
-const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+const links = [  { name: 'Home', href: '/dashboard', icon: HomeIcon },
   {
-    name: 'Auswertungen',
+    name: 'Messungen',
     href: '/dashboard/analysis',
     icon: DocumentDuplicateIcon,
   },

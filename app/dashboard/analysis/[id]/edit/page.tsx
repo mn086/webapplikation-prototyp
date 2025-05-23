@@ -40,7 +40,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       {/* Navigationsleiste mit Breadcrumbs für die Navigation */}
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Auswertungen', href: '/dashboard/analysis' },
+          { label: 'Messungen', href: '/dashboard/analysis' },
           {
             label: 'Messung analysieren',
             href: `/dashboard/analysis/${id}`,
