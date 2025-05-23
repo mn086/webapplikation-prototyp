@@ -173,16 +173,16 @@ export async function updateMeasurement(id: string, formData: FormData) {
         WHERE measurement_id = ${id}
         RETURNING *
       `;
-    }
-
-    if (!result || result.length === 0) {
+    }    if (!result || result.length === 0) {
       return { message: 'Keine Änderungen vorgenommen.' };
     }
-
+    
     // Aktualisiere die betroffenen Seiten
     revalidatePath('/dashboard/analysis');
     revalidatePath(`/dashboard/analysis/${id}`);
-    return { message: 'Messung erfolgreich aktualisiert.' };
+    
+    // Erfolgreiche Aktualisierung
+    return { message: null };
     
   } catch (error) {
     console.error('Fehler beim Aktualisieren der Messung:', error);

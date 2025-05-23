@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import TimeseriesChartClient from '@/app/ui/dashboard/timeseries-chart-client';
 import { useActionState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Definiere den Typ für den Formularstatus mit Fehlerhandling
 // Definiere den Typ für den Formularstatus mit Fehlerhandling und Statusnachrichten
@@ -32,10 +33,11 @@ export default function EditAnalysisForm({
 }: {
   measurement: MeasurementForm;
 }) {  
+  const router = useRouter();
   // Initialisiere den Formularstatus
   const initialState: State = { message: null, errors: {} };
 
-  // Funktion zur Verarbeitung des Formulars mit Validierung
+  // Funktion zur Verarbeitung des Formulars mit Validierung und Weiterleitung
   const updateMeasurementWithId = async (prevState: State, formData: FormData) => {
     try {
       // Prüfe ob ein Dateiname angegeben wurde
@@ -60,6 +62,13 @@ export default function EditAnalysisForm({
 
       // Führe die Aktualisierung durch
       const result = await updateMeasurement(measurement.id, formData);
+      
+      // Wenn keine Fehler auftreten, leite zur Übersicht weiter
+      if (!result.errors && !result.message) {
+        router.push('/dashboard/analysis');
+        return result;
+      }
+      
       return {
         ...prevState,
         ...result,
