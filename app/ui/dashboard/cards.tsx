@@ -1,24 +1,35 @@
+// Importiere die benötigten Icons aus der Heroicons-Bibliothek
 import {
-  ChartBarIcon,
-  CheckCircleIcon,
-  ClockIcon,
+  ChartBarIcon,    // Icon für Gesamtmessungen
+  CheckCircleIcon, // Icon für validierte Messungen
+  ClockIcon,      // Icon für offene Messungen
+  ServerIcon,     // Icon für Apache-Messungen
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchDashboardData } from '@/app/lib/data';
+import { fetchPHPMeasurementCount } from '@/app/lib/php-api';
 
+// Zuordnung von Kartentypen zu entsprechenden Icons
 const iconMap = {
   measurements: ChartBarIcon,
   validated: CheckCircleIcon,
   open: ClockIcon,
+  apache: ServerIcon,
 };
 
+// Komponente zum Rendern aller Statistik-Karten
+// Lädt die Daten und zeigt sie in einzelnen Card-Komponenten an
 export default async function CardWrapper() {
+  // Hole die Statistiken aus der PostgreSQL-Datenbank
   const {
     numberOfMeasurements,
     validatedCount,
     openCount,
   } = await fetchDashboardData();
   
+  // Hole die Anzahl der Messungen vom Apache Webservice
+  const phpMeasurementCount = await fetchPHPMeasurementCount();
+
   return (
     <>
       <Card 
@@ -34,20 +45,26 @@ export default async function CardWrapper() {
       <Card
         title="Offene Messungen"
         value={openCount}
-        type="open"
+        type="open"      />
+      <Card
+        title="Messungen auf Apache Webserver"
+        value={phpMeasurementCount}
+        type="apache"
       />
     </>
   );
 }
 
+// Einzelne Statistik-Karten-Komponente
+// Zeigt einen Titel, einen Wert und ein passendes Icon an
 export function Card({
-  title,
-  value,
-  type,
+  title,    // Titel der Karte
+  value,    // Anzuzeigende Zahl oder Text
+  type,     // Art der Karte (bestimmt das Icon)
 }: {
   title: string;
   value: number | string;
-  type: 'measurements' | 'validated' | 'open';
+  type: 'measurements' | 'validated' | 'open' | 'apache';
 }) {
   const Icon = iconMap[type];
 
