@@ -38,10 +38,10 @@ export default function NavLinks() {
             href={link.href}
             className={clsx(
               // Basis-Styling für alle Links
-              'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
+              'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-[#3E4847] p-3 text-sm font-medium text-white hover:bg-[#4a5553] md:flex-none md:justify-start md:p-2 md:px-3',
               {
-                // Zusätzliches Styling für den aktiven Link
-                'bg-sky-100 text-blue-600': pathname === link.href,
+                // Zusätzliches Styling für den aktiven Link - HdM Rot für aktive Items
+                'bg-[#e2001a] text-white': pathname === link.href,
               },
             )}
           >
