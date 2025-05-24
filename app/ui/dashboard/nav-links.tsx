@@ -5,18 +5,24 @@
 import {
   HomeIcon,
   DocumentDuplicateIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
 // Liste der Navigationslinks für die Seitenleiste
-// Bei größeren Anwendungen würde dies in einer Datenbank gespeichert werden
-const links = [  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+const links = [
+  { name: 'Home', href: '/dashboard', icon: HomeIcon },
   {
     name: 'Messungen',
     href: '/dashboard/analysis',
     icon: DocumentDuplicateIcon,
+  },
+  {
+    name: 'Dokumentation',
+    href: '/docs',
+    icon: BookOpenIcon,
   },
 ];
 
