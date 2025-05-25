@@ -1,30 +1,35 @@
+// Data Access Layer: Zentrale Stelle für alle Datenbankzugriffe
 import sql from './db';
 import { MeasurementForm } from '@/app/lib/definitions';
 
+// Erweiterter Typ für Messungen mit Metadaten und Zeitreihen
 export type MeasurementWithMetadata = {
-  id: string;
-  filename: string;
-  created_at: Date;
-  description: string | null;
-  status: 'offen' | 'validiert';
-  channels: string[];
-  data: {
-    seconds_from_start: number;
-    [key: string]: number;  // Dynamische Kanalwerte
-  }[];
+    id: string;
+    filename: string;
+    created_at: Date;
+    description: string | null;
+    status: 'offen' | 'validiert';
+    channels: string[];            // Liste der Kanalnamen
+    data: {                        // Zeitreihendaten
+        seconds_from_start: number;
+        [key: string]: number;     // Dynamische Kanalwerte
+    }[];
 };
 
+// Vereinfachter Typ für Tabelleneinträge
 export type MeasurementTableEntry = {
-  id: string;
-  filename: string;
-  created_at: Date;
-  description: string | null;
-  status: 'offen' | 'validiert';
-  channel_count: number;
+    id: string;
+    filename: string;
+    created_at: Date;
+    description: string | null;
+    status: 'offen' | 'validiert';
+    channel_count: number;
 };
 
+// Konstante für die Paginierung
 const ITEMS_PER_PAGE = 6;
 
+// Lädt Zeitreihendaten für die Visualisierung
 export async function fetchTimeseriesData() {
   try {
     console.log('Lade Zeitreihendaten...');
@@ -92,6 +97,7 @@ export async function fetchTimeseriesData() {
   }
 }
 
+// Lädt die neuesten Metadaten für die Timeline
 export async function fetchLatestMetadata() {
   try {
     const data = await sql`
@@ -108,8 +114,10 @@ export async function fetchLatestMetadata() {
   }
 }
 
+// Lädt aggregierte Daten für das Dashboard (Statistik-Karten)
 export async function fetchDashboardData() {
   try {
+    // Führe Abfragen parallel aus für bessere Performance
     const measurementCountPromise = sql`SELECT COUNT(*) FROM measurements`;
     const statusCountPromise = sql`
       SELECT
@@ -118,11 +126,13 @@ export async function fetchDashboardData() {
       FROM metadata
     `;
 
+    // Warte auf beide Abfragen
     const data = await Promise.all([
       measurementCountPromise,
       statusCountPromise,
     ]);
 
+    // Extrahiere und konvertiere die Ergebnisse
     const numberOfMeasurements = Number(data[0][0].count ?? '0');
     const validatedCount = Number(data[1][0].validiert ?? '0');
     const openCount = Number(data[1][0].offen ?? '0');
@@ -138,6 +148,7 @@ export async function fetchDashboardData() {
   }
 }
 
+// Lädt Statistiken für die Karten
 export async function fetchMeasurementStats() {  try {
     // Hole Statistiken für die Karten
     const stats = await sql`
@@ -160,6 +171,7 @@ export async function fetchMeasurementStats() {  try {
   }
 }
 
+// Lädt gefilterte Metadaten für die Tabelle
 export async function fetchFilteredMetadata(
   query: string,
   currentPage: number,
@@ -185,6 +197,7 @@ export async function fetchFilteredMetadata(
   }
 }
 
+// Lädt gefilterte Messungen für die Tabelle
 export async function fetchFilteredMeasurements(query: string, currentPage: number) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -219,6 +232,7 @@ export async function fetchFilteredMeasurements(query: string, currentPage: numb
   }
 }
 
+// Lädt die Gesamtanzahl der Metadaten-Seiten
 export async function fetchMetadataPages(query: string) {
   try {
     const data = await sql`SELECT COUNT(*)
@@ -236,6 +250,7 @@ export async function fetchMetadataPages(query: string) {
   }
 }
 
+// Lädt die Seitenanzahl für Messungen
 export async function fetchMeasurementsPages(query: string) {
   try {
     const count = await sql`
@@ -252,6 +267,7 @@ export async function fetchMeasurementsPages(query: string) {
   }
 }
 
+// Lädt eine Messung nach ID
 export async function fetchMeasurementById(id: string): Promise<MeasurementForm | null> {
   try {
     // Hole die Messung mit Metadaten

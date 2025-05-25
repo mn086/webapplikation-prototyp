@@ -13,15 +13,15 @@ Diese Anwendung ist ein Dashboard zur Visualisierung von Zeitreihendaten, das mi
 
 ```
 app/
-├── api/                     # Next.js API-Routes
-│   ├── check-status/       # Statusabfrage der Datenbank
-│   ├── check-tables/       # Überprüfung der Datenbankstruktur
-│   ├── check-values/       # Überprüfung der Messwerte
-│   ├── create-indices/     # Indexerstellung
-│   ├── init/              # Datenbankinitialisierung
-│   ├── seed/              # Testdaten einfügen
-│   ├── test-data/         # Testdatenabfrage
-│   └── test-update/       # Update-Tests
+├── api/                     # Setup & Debug API-Routes
+│   ├── check-status/       # [Diag] Statusabfrage der Datenbank
+│   ├── check-tables/       # [Diag] Überprüfung der Datenbankstruktur
+│   ├── check-values/       # [Diag] Überprüfung der Messwerte
+│   ├── create-indices/     # [Setup] Einmalige Indexerstellung
+│   ├── init/              # [Setup] Initiale Datenbankinitialisierung
+│   ├── seed/              # [Optional] Initiales Einfügen von Testdaten
+│   ├── test-data/         # [Debug] Testdatenabfrage
+│   └── test-update/       # [Debug] Update-Tests
 ├── dashboard/              # Dashboard-Bereich
 │   ├── layout.tsx        # Gemeinsames Layout für Dashboard
 │   ├── (overview)/       # Übersichts-Route
@@ -85,15 +85,35 @@ apache-php-measurements/   # Apache PHP Backend
    AUTH_SECRET=ihr-auth-secret-schlüssel
    ```
 
-4. Datenbank initialisieren:
-   Entweder über die API-Route:
-   - Development Server starten (siehe Schritt 5)
-   - Im Browser aufrufen: `http://localhost:3000/api/init`
-   
-   Oder direkt über SQL-Client:
+4. Datenbank einrichten:
+   Führen Sie die folgenden Schritte in dieser Reihenfolge aus:
+
+   a) Datenbank initialisieren (ERFORDERLICH)
+   ```powershell
+   # Development Server starten
+   pnpm dev
+   # Dann im Browser aufrufen:
+   http://localhost:3000/api/init
+   ```
+
+   b) Indizes erstellen für optimale Performance (ERFORDERLICH)
+   ```powershell
+   # Im Browser aufrufen:
+   http://localhost:3000/api/create-indices
+   ```
+
+   c) Testdaten einfügen (OPTIONAL)
+   ```powershell
+   # Nur wenn Sie mit Beispieldaten arbeiten möchten:
+   http://localhost:3000/api/seed
+   ```
+
+   Alternativ können Sie diese Schritte auch direkt über einen SQL-Client ausführen:
    ```powershell
    # In psql oder einem anderen PostgreSQL-Client:
-   \i app/lib/schema.sql
+   \i app/lib/schema.sql   # Initialisierung
+   \i app/lib/indices.sql  # Indizes
+   \i app/lib/seed.sql     # Testdaten
    ```
 
 5. Development Server starten:

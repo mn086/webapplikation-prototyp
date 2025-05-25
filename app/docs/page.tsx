@@ -13,15 +13,17 @@ export default function DocsPage() {
           <Link href="#aufgabenstellung" className="block hover:text-blue-600">
             1. Aufgabenstellung und Umsetzung
           </Link>
-          <Link href="#json-endpoints" className="block hover:text-blue-600">
-            2. Datenabruf via JSON-Endpoints
+          <Link href="#json-endpoints" className="block hover:text-blue-600">            2. Datenbankanbindung und Datenverarbeitung
           </Link>
           <div className="pl-4 space-y-1">
             <Link href="#nextjs-api" className="block hover:text-blue-600 text-sm">
-              2.1 Next.js API Routes
+              2.1 Datenbankanbindung und Data Access Layer
             </Link>
             <Link href="#php-api" className="block hover:text-blue-600 text-sm">
               2.2 Externe PHP-API
+            </Link>
+            <Link href="#data-flow" className="block hover:text-blue-600 text-sm">
+              2.3 Datenfluss im Detail
             </Link>
           </div>
         </nav>
@@ -51,11 +53,10 @@ export default function DocsPage() {
             <RequirementItem 
               text="Nutzung von Pages Router oder App Router in Next.js (präferiert wird App Router)"
               implemented={true}
-              details="App Router implementiert"
-            />            <RequirementItem 
+              details="App Router implementiert"            />            <RequirementItem 
               text="Abruf der Daten vom Web-Service-Endpoint im JSON-Format"
               implemented={true}
-              details={<>Sowohl <Link href="#nextjs-api" className="text-blue-600 hover:underline">Next.js API Routes</Link> als auch <Link href="#php-api" className="text-blue-600 hover:underline">externe PHP-API</Link></>}
+              details={<>Sowohl <Link href="#json-endpoints" className="text-blue-600 hover:underline">Next.js API Routes</Link> als auch <Link href="#php-api" className="text-blue-600 hover:underline">externe PHP-API</Link></>}
             />
             <RequirementItem 
               text="Grafische Darstellung der Daten mit Hilfe einer geeigneten JS-Charting-Bibliothek"
@@ -111,94 +112,160 @@ export default function DocsPage() {
       {/* JSON-Endpoints */}
       <section id="json-endpoints" className="mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">2. Datenabruf via JSON-Endpoints</h2>
+          <h2 className="text-2xl font-bold mb-6">2. Datenbankanbindung und Datenverarbeitung</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
         </div>
 
-        <div className="prose max-w-none">
-          <p className="mb-6 text-lg">
-            Die Anwendung verwendet zwei verschiedene Arten von JSON-Endpoints für den Datenabruf: 
-            Next.js API Routes für die interne Datenbankanbindung und eine externe PHP-API für den 
-            Import von Messdaten.
+        <div className="prose max-w-none">          <p className="mb-6 text-lg">
+            Die produktive Anwendung nutzt einen effizienten, mehrschichtigen Ansatz für Datenbankzugriffe 
+            ohne zusätzliche API-Routes. Die Setup-API-Routen werden ausschließlich für die initiale 
+            Einrichtung und Diagnose benötigt.
           </p>
 
-          {/* Next.js API Routes */}
+          {/* Setup & Diagnose API-Routes */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">Setup & Diagnose API-Routes:</h4>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm mb-4">
+{`app/api/
+├── check-status/       # [Diag] Validierungsstatus
+├── check-tables/       # [Diag] Datenbankstruktur
+├── check-values/       # [Diag] Datenintegrität
+├── create-indices/     # [Setup] Erstellt Datenbankindizes
+├── init/              # [Setup] Initiale Datenbankinitialisierung
+├── seed/              # [Optional] Testdaten-Import
+├── test-data/         # [Debug] Datenabfrage
+├── test-db/           # [Debug] Verbindungstest
+└── test-update/       # [Debug] Update-Test`}</pre>
+          </div>
+
+          {/* Datenbankzugriff */}
           <section id="nextjs-api" className="mb-8">
-            <h3 className="text-xl font-semibold mt-8 mb-4">2.1 Next.js API Routes</h3>
-            <p className="mb-4">
-              Die Next.js API Routes bilden das Herzstück der Anwendung und ermöglichen den 
-              typsicheren Zugriff auf die PostgreSQL-Datenbank. Die wichtigsten API-Endpunkte sind:
+            <h3 className="text-xl font-semibold mt-8 mb-4">2.1 Datenbankanbindung und Data Access Layer</h3>
+            
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">Dreischichtiger Datenzugriff:</h4>
+              <ol className="list-decimal list-inside space-y-2">
+                <li className="mb-4">
+                  <span className="font-medium">Server Components</span>
+                  <p className="ml-5 mt-1 text-sm text-gray-600">
+                    Direkter Datenbankzugriff über den Data Access Layer, keine zusätzlichen API-Routes erforderlich
+                  </p>
+                </li>
+                <li className="mb-4">
+                  <span className="font-medium">Data Access Layer (<code className="text-sm bg-gray-100 px-1">lib/data.ts</code>)</span>
+                  <p className="ml-5 mt-1 text-sm text-gray-600">
+                    Zentrale Stelle für alle Datenbankoperationen, implementiert typsichere Funktionen
+                  </p>
+                </li>
+                <li className="mb-4">
+                  <span className="font-medium">Datenbankverbindung (<code className="text-sm bg-gray-100 px-1">lib/db.ts</code>)</span>
+                  <p className="ml-5 mt-1 text-sm text-gray-600">
+                    Konfiguriert Verbindungsparameter (SSL, Timeouts), definiert Basis-Typen, exportiert SQL-Instanz
+                  </p>
+                </li>
+              </ol>
+            </div>            <p className="mb-4">
+              Die zentrale Datenbankverbindung wird in <code className="text-sm bg-gray-100 px-1">db.ts</code> konfiguriert 
+              und stellt typsichere Datenbankzugriffe bereit. Der Data Access Layer in <code className="text-sm bg-gray-100 px-1">data.ts</code> 
+              implementiert alle notwendigen Datenbankoperationen für das Dashboard.
             </p>
             
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h4 className="font-semibold mb-2">Kernfunktionen:</h4>
+              <h4 className="font-semibold mb-2">Kernfunktionen des Data Access Layers:</h4>
               <ul className="list-disc list-inside space-y-2">
-                <li><code className="text-sm bg-gray-100 px-1">GET /api/test-data</code> - Lädt aktuelle Messdaten</li>
-                <li><code className="text-sm bg-gray-100 px-1">GET /api/check-values</code> - Prüft Messwerte</li>
-                <li><code className="text-sm bg-gray-100 px-1">GET /api/check-status</code> - Status der Messungen</li>
+                <li><code className="text-sm bg-gray-100 px-1">fetchDashboardData()</code> - Lädt Statistiken für die Übersicht</li>
+                <li><code className="text-sm bg-gray-100 px-1">fetchTimeseriesData()</code> - Lädt Zeitreihendaten für Visualisierungen</li>
+                <li><code className="text-sm bg-gray-100 px-1">fetchFilteredMeasurements()</code> - Implementiert Suche und Paginierung</li>
               </ul>
-            </div>
-
-            <p className="mb-4">Beispiel für einen API-Endpoint:</p>
+            </div>            <p className="mb-4">Datenbankverbindung (db.ts):</p>
             <div className="rounded-lg overflow-hidden">
               <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/api/test-data/route.ts
+                📄 app/lib/db.ts
               </div>
               <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
                 <code className="language-typescript">
-{`export async function GET() {
+{`import postgres from 'postgres';
+
+// Konfiguration für die Neon Postgres-Verbindung
+const sql = postgres(process.env.POSTGRES_URL!, {
+    ssl: 'require',              // SSL-Verschlüsselung für sichere Verbindung
+    max: 10,                     // Maximale Anzahl gleichzeitiger Verbindungen
+    idle_timeout: 20,            // Timeout für inaktive Verbindungen
+    connect_timeout: 30,         // Timeout für Verbindungsaufbau
+    connection: {
+        options: '-c timezone=UTC'  // Konsistente Zeitzoneneinstellung
+    }
+});
+
+// Typdefinitionen für typsichere Datenbankzugriffe
+export type Measurement = {
+    id: string;
+    timestamp: Date;
+    channel1: number | null;
+    channel2: number | null;
+    channel3: number | null;
+};
+
+export type Metadata = {
+    id: string;
+    measurement_id: string;
+    filename: string;
+    created_at: Date;
+    description: string | null;
+    status: 'validiert' | 'offen';
+};
+
+export default sql;`}</code></pre>
+            </div>
+
+            <p className="mb-4">Beispiel einer Data Access Layer Funktion (data.ts):</p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/lib/data.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">
+{`export async function fetchDashboardData() {
   try {
-    const data = await sql\`
-      WITH latest_measurement AS (
-        SELECT id, created_at FROM measurements
-        ORDER BY created_at DESC LIMIT 1
-      )
+    // Führe Abfragen parallel aus für bessere Performance
+    const measurementCountPromise = sql\`SELECT COUNT(*) FROM measurements\`;
+    const statusCountPromise = sql\`
       SELECT
-        m.id as measurement_id,
-        m.created_at,
-        md.filename,
-        md.description,
-        md.status,
-        json_agg(DISTINCT jsonb_build_object(
-          'id', mc.id,
-          'name', mc.channel_name,
-          'unit', mc.unit,
-          'values', (
-            SELECT json_agg(jsonb_build_object(
-              'seconds', mv.seconds_from_start,
-              'value', mv.value
-            ) ORDER BY mv.seconds_from_start)
-            FROM measurement_values mv
-            WHERE mv.channel_id = mc.id
-          )
-        )) as channels
-      FROM latest_measurement m
-      JOIN metadata md ON md.measurement_id = m.id
-      JOIN measurement_channels mc ON mc.measurement_id = m.id
-      GROUP BY m.id, m.created_at, md.filename, 
-               md.description, md.status
+        COUNT(CASE WHEN status = 'validiert' THEN 1 END) AS "validiert",
+        COUNT(CASE WHEN status = 'offen' THEN 1 END) AS "offen"
+      FROM metadata
     \`;
-    return NextResponse.json(data[0]);
+
+    // Warte auf beide Abfragen
+    const data = await Promise.all([
+      measurementCountPromise,
+      statusCountPromise,
+    ]);
+
+    // Extrahiere und konvertiere die Ergebnisse
+    return {
+      numberOfMeasurements: Number(data[0][0].count ?? '0'),
+      validatedCount: Number(data[1][0].validiert ?? '0'),
+      openCount: Number(data[1][0].offen ?? '0'),
+    };
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch data' },
-      { status: 500 }
-    );
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der Dashboard-Daten.');
   }
 }`}</code></pre>
             </div>
 
             <p className="mb-4">
-              Die API-Routes nutzen das <code>postgres</code> Package für typsichere SQL-Abfragen und 
-              verwenden moderne Features wie <code>json_agg</code> und <code>jsonb_build_object</code> 
-              für effiziente JSON-Aggregation.
+              Der Data Access Layer nutzt die typsichere SQL-Verbindung und implementiert 
+              effiziente Datenbankabfragen mit modernen Features wie Parallel Queries und 
+              typsicheren Rückgabewerten.
             </p>
           </section>
 
           {/* PHP-API */}
-          <section id="php-api" className="mb-8">
+          <section id="php-api" className="mt-8">
             <h3 className="text-xl font-semibold mt-8 mb-4">2.2 Externe PHP-API</h3>
             <p className="mb-4">
               Die PHP-API dient als Schnittstelle zu einem bestehenden Datenpool von Messdaten im 
@@ -293,7 +360,34 @@ if($num > 0) {
         </div>
       </section>
 
-      {/* ... weitere Sections ... */}
+      {/* Data Flow */}
+      <section id="data-flow" className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">2.3 Datenfluss im Detail</h2>
+        
+        <p className="mb-4">
+          Der Datenfluss in der Anwendung folgt einem strukturierten Muster, das die Wartbarkeit und Skalierbarkeit gewährleistet:
+        </p>
+
+        <h3 className="text-xl font-semibold mb-2">Komponenten-Übersicht</h3>
+        <ul className="list-disc pl-6 mb-4">
+          <li>React Server Components laden Daten direkt über die Data Access Layer</li>
+          <li>Client Components nutzen API-Routen für dynamische Datenaktualisierungen</li>
+          <li>Error Boundaries fangen Fehler auf Komponentenebene ab</li>
+        </ul>
+
+        <h3 className="text-xl font-semibold mb-2">Verarbeitungskette</h3>
+        <ol className="list-decimal pl-6 mb-4">
+          <li>Datenabfrage über die Data Access Layer (`data.ts`)</li>
+          <li>Typensichere Verarbeitung durch TypeScript Interfaces</li>
+          <li>Fehlerbehandlung auf jeder Ebene der Verarbeitungskette</li>
+          <li>Caching und Optimierung durch Next.js</li>
+        </ol>
+
+        <p className="mb-4">
+          Besonders wichtig ist die Integration von TypeScript, die eine durchgängige Typsicherheit von der Datenbank bis zur Benutzeroberfläche gewährleistet.
+        </p>
+      </section>
+      {/* ...remaining content... */}
     </main>
   );
 }
