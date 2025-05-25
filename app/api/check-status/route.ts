@@ -1,8 +1,10 @@
+// API-Route zur Überprüfung des Validierungsstatus aller Messungen
 import { NextResponse } from 'next/server';
 import sql from '@/app/lib/db';
 
 export async function GET() {
   try {
+    // Hole alle Messungen mit ihren Metadaten, sortiert nach Erstellungsdatum
     const measurements = await sql`
       SELECT 
         m.id,
@@ -14,6 +16,10 @@ export async function GET() {
       ORDER BY m.created_at DESC;
     `;
 
+    // Berechne Statistiken über die Validierungsstatus
+    // - Gesamtanzahl der Messungen
+    // - Anzahl der validierten Messungen
+    // - Anzahl der offenen (nicht validierten) Messungen
     const counts = await sql`
       SELECT 
         COUNT(*) as total,
@@ -22,6 +28,7 @@ export async function GET() {
       FROM metadata;
     `;
     
+    // Sende die Ergebnisse als JSON-Response
     return NextResponse.json({
       counts: counts[0],
       measurements
@@ -29,9 +36,10 @@ export async function GET() {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error checking status:', error);
+    // Im Fehlerfall: Protokolliere den Fehler und sende eine Fehlermeldung
+    console.error('Fehler bei der Statusprüfung:', error);
     return NextResponse.json(
-      { error: 'Status check failed', details: error instanceof Error ? error.message : String(error) },
+      { error: 'Statusprüfung fehlgeschlagen', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

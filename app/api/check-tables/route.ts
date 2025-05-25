@@ -1,9 +1,12 @@
+// API-Route zur Überprüfung der Datenbankstruktur
+// Analysiert Tabellen, Spalten, Indizes und Fremdschlüsselbeziehungen
 import sql from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-        // Hole alle Tabellen mit ihrer Spaltenanzahl
+        // Hole eine Übersicht aller Tabellen im 'public' Schema
+        // Für jede Tabelle wird auch die Anzahl ihrer Spalten ermittelt
         const tables = await sql`
             SELECT table_name, 
                    (SELECT COUNT(*) FROM information_schema.columns WHERE table_name = t.table_name) as column_count
@@ -12,7 +15,8 @@ export async function GET() {
             AND table_type = 'BASE TABLE';
         `;
 
-        // Prüfe Struktur der metadata Tabelle
+        // Analysiere die Struktur der metadata Tabelle
+        // Zeigt Spaltennamen, Datentypen und Null-Erlaubnis
         const metadata = await sql`
             SELECT column_name, data_type, is_nullable
             FROM information_schema.columns 
@@ -20,7 +24,8 @@ export async function GET() {
             AND table_schema = 'public';
         `;
 
-        // Prüfe Struktur der measurements Tabelle
+        // Analysiere die Struktur der measurements Tabelle
+        // Analog zur metadata Tabelle
         const measurements = await sql`
             SELECT column_name, data_type, is_nullable
             FROM information_schema.columns 
@@ -28,7 +33,8 @@ export async function GET() {
             AND table_schema = 'public';
         `;
 
-        // Prüfe Indices
+        // Ermittle alle Indizes in der Datenbank
+        // Zeigt Tabellenname, Indexname, indizierte Spalten und Unique-Flags
         const indices = await sql`
             SELECT
                 t.relname as table_name,
@@ -45,7 +51,8 @@ export async function GET() {
             ORDER BY t.relname, i.relname;
         `;
 
-        // Prüfe Fremdschlüsselbeziehungen
+        // Ermittle alle Fremdschlüsselbeziehungen zwischen den Tabellen
+        // Zeigt die verknüpften Tabellen und Spalten sowie den Constraint-Namen
         const foreignKeys = await sql`
             SELECT
                 tc.table_schema, 
@@ -65,21 +72,23 @@ export async function GET() {
             AND tc.table_schema = 'public';
         `;
 
+        // Fasse alle Ergebnisse in einer JSON-Antwort zusammen
         return NextResponse.json({
             tables: tables,
             metadata_structure: metadata,
             measurements_structure: measurements,
             indices: indices,
             foreign_keys: foreignKeys,
-            message: 'Database structure checked successfully'
+            message: 'Datenbankstruktur erfolgreich überprüft'
         }, { 
             headers: { 'Content-Type': 'application/json' }
         });
 
     } catch (error) {
-        console.error('Error checking tables:', error);
+        // Im Fehlerfall: Protokolliere den Fehler und sende eine Fehlermeldung
+        console.error('Fehler bei der Tabellenprüfung:', error);
         return NextResponse.json(
-            { error: 'Failed to check tables', details: error instanceof Error ? error.message : String(error) },
+            { error: 'Tabellenprüfung fehlgeschlagen', details: error instanceof Error ? error.message : String(error) },
             { status: 500 }
         );
     }

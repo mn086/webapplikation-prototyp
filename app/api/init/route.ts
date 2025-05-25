@@ -1,3 +1,5 @@
+// API-Route zur Initialisierung der Datenbank
+// Erstellt das Datenbankschema und fügt Testdaten ein
 import sql from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
@@ -5,37 +7,40 @@ import path from 'path';
 
 export async function GET() {
     try {
-        console.log('Starting database initialization...');
+        console.log('Starte Datenbankinitialisierung...');
 
-        // Lese schema.sql
+        // Lade die SQL-Datei mit der Datenbankstruktur
         const schemaPath = path.join(process.cwd(), 'app', 'lib', 'schema.sql');
         const createScript = await fs.readFile(schemaPath, 'utf8');
-        console.log('Schema file loaded');
+        console.log('Schema-Datei geladen');
 
-        // Führe Schema-Skript in einer Transaktion aus
+        // Führe alle Datenbankoperationen in einer Transaktion aus
+        // Dies stellt sicher, dass die Datenbank entweder vollständig oder gar nicht initialisiert wird
         await sql.begin(async (sql) => {
-            console.log('Executing schema script...');
+            console.log('Führe Schema-Skript aus...');
             await sql.unsafe(createScript);
-            console.log('Schema created successfully');
+            console.log('Datenbankstruktur erfolgreich erstellt');
 
-            // Lese seed.sql für Testdaten
+            // Lade die SQL-Datei mit den Testdaten
             const seedPath = path.join(process.cwd(), 'app', 'lib', 'seed.sql');
             const seedScript = await fs.readFile(seedPath, 'utf8');
-            console.log('Seed file loaded');
+            console.log('Testdaten-Datei geladen');
 
-            // Führe Seed-Skript aus
-            console.log('Executing seed script...');
+            // Füge die Testdaten in die Datenbank ein
+            console.log('Füge Testdaten ein...');
             await sql.unsafe(seedScript);
-            console.log('Test data inserted successfully');
+            console.log('Testdaten erfolgreich eingefügt');
         });
 
+        // Sende Erfolgsmeldung zurück
         return NextResponse.json({ 
-            message: 'Database initialized and seeded successfully'
+            message: 'Datenbank erfolgreich initialisiert und mit Testdaten gefüllt'
         }, { status: 200 });
     } catch (error) {
-        console.error('Error initializing database:', error);
+        // Im Fehlerfall: Protokolliere den Fehler und sende eine Fehlermeldung
+        console.error('Fehler bei der Datenbankinitialisierung:', error);
         return NextResponse.json(
-            { error: 'Failed to initialize database', details: error instanceof Error ? error.message : String(error) },
+            { error: 'Datenbankinitialisierung fehlgeschlagen', details: error instanceof Error ? error.message : String(error) },
             { status: 500 }
         );
     }
