@@ -9,11 +9,11 @@ export default function DocsPage() {
         {/* Inhaltsverzeichnis */}
       <div className="mb-12 p-6 bg-gray-50 rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Inhaltsverzeichnis</h2>
-        <nav className="space-y-2">
-          <Link href="#aufgabenstellung" className="block hover:text-blue-600">
+        <nav className="space-y-2">          <Link href="#aufgabenstellung" className="block hover:text-blue-600">
             1. Aufgabenstellung und Umsetzung
           </Link>
-          <Link href="#json-endpoints" className="block hover:text-blue-600">            2. Datenbankanbindung und Datenverarbeitung
+          <Link href="#json-endpoints" className="block hover:text-blue-600">
+            2. Datenbankanbindung und Datenverarbeitung
           </Link>
           <div className="pl-4 space-y-1">
             <Link href="#nextjs-api" className="block hover:text-blue-600 text-sm">
@@ -21,8 +21,23 @@ export default function DocsPage() {
             </Link>
             <Link href="#php-api" className="block hover:text-blue-600 text-sm">
               2.2 Externe PHP-API
-            </Link>            <Link href="#architecture" className="block hover:text-blue-600 text-sm">
+            </Link>
+            <Link href="#architecture" className="block hover:text-blue-600 text-sm">
               2.3 Gesamtarchitektur und Integration
+            </Link>
+          </div>
+          <Link href="#auth" className="block hover:text-blue-600">
+            3. Authentifizierung und Zugriffskontrolle
+          </Link>
+          <div className="pl-4 space-y-1">
+            <Link href="#auth-setup" className="block hover:text-blue-600 text-sm">
+              3.1 NextAuth.js Konfiguration
+            </Link>
+            <Link href="#auth-components" className="block hover:text-blue-600 text-sm">
+              3.2 Login-Komponenten
+            </Link>
+            <Link href="#auth-protection" className="block hover:text-blue-600 text-sm">
+              3.3 Geschützte Routen
             </Link>
           </div>
         </nav>
@@ -141,7 +156,12 @@ export default function DocsPage() {
 
           {/* Datenbankzugriff */}
           <section id="nextjs-api" className="mb-8">
-            <h3 className="text-xl font-semibold mt-8 mb-4">2.1 Datenbankanbindung und Data Access Layer</h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.1 Datenbankanbindung und Data Access Layer</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
             
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
               <h4 className="font-semibold mb-2">Dreischichtiger Datenzugriff:</h4>
@@ -270,8 +290,13 @@ export default sql;`}</code></pre>
               typsicheren Rückgabewerten.
             </p>
           </section>          {/* PHP-API */}
-          <section id="php-api" className="mt-8">
-            <h3 className="text-xl font-semibold mt-8 mb-4">2.2 Externe PHP-API</h3>
+          <section id="php-api" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.2 Externe PHP-API</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
             <p className="mb-4">
               Über eine externe PHP-API werden weitere Messdaten im JSON-Format von einem Apache Webserver 
               bereitgestellt. Diese Messungen können über das Dashboard eingelesen, in der PostgreSQL-Datenbank 
@@ -524,7 +549,547 @@ export async function importMeasurement(id: string) {
           </ol>
         </div>
       </section>
-      {/* ...remaining content... */}
+
+      {/* Authentication */}
+      <section id="auth" className="mt-12 mb-12">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold mb-6">3. Authentifizierung und Zugriffskontrolle</h2>
+          <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+            ↑ Nach oben
+          </Link>
+        </div>
+
+        <div className="prose max-w-none">
+          <p className="mb-6 text-lg">
+            Die Anwendung implementiert ein robustes Authentifizierungssystem basierend auf NextAuth.js, 
+            das den Zugriff auf geschützte Ressourcen kontrolliert und eine sichere Benutzeranmeldung 
+            ermöglicht.
+          </p>
+
+          {/* NextAuth.js Setup */}
+          <section id="auth-setup" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.1 NextAuth.js Konfiguration</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Die Authentifizierung wird durch NextAuth.js bereitgestellt und nutzt einen 
+              Credentials Provider für die Benutzeranmeldung. Die Konfiguration erfolgt in 
+              mehreren zentralen Dateien.
+            </p>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Auth Konfiguration</h4>            <p className="mb-4">
+              Die Basis-Konfiguration für NextAuth.js definiert die grundlegenden Authentifizierungseinstellungen, 
+              insbesondere die Zugriffskontrolle für geschützte Routen und die Weiterleitung bei fehlender Berechtigung:
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 auth.config.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Importiere den NextAuth Konfigurationstyp
+import type { NextAuthConfig } from 'next-auth';
+
+/**
+ * Hauptkonfiguration für NextAuth
+ * Definiert das Authentifizierungsverhalten der Anwendung
+ */
+export const authConfig = {
+  // Konfiguration der Authentifizierungsseiten
+  pages: {
+    signIn: '/login', // Pfad zur Login-Seite
+  },
+  callbacks: {
+    /**
+     * Callback zur Autorisierungsprüfung
+     * Kontrolliert den Zugriff auf geschützte Routen und Weiterleitungen
+     * @param auth - Authentifizierungsstatus des Benutzers
+     * @param nextUrl - Ziel-URL des Requests
+     */
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnDocs = nextUrl.pathname.startsWith('/docs');
+
+      // Erlaube Zugriff auf Dokumentation ohne Login
+      if (isOnDocs) return true;
+
+      // Prüfe Zugriffsberechtigung für Dashboard
+      if (isOnDashboard) {
+        if (isLoggedIn) return true;
+        return false; // Leite nicht authentifizierte Benutzer zur Login-Seite weiter
+      } else if (isLoggedIn && !isOnDocs) {
+        return Response.redirect(new URL('/dashboard', nextUrl));
+      }
+      return true;
+    },
+  },
+  providers: [], // Provider-Array bleibt vorerst leer, wird in auth.ts konfiguriert
+} satisfies NextAuthConfig;`}</code>
+              </pre>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Credentials Provider</h4>
+            <p className="mb-4">
+              Die Implementierung der Benutzerauthentifizierung erfolgt über einen Credentials Provider, 
+              der die Anmeldedaten gegen die PostgreSQL-Datenbank prüft. Die Datei beinhaltet die 
+              Datenbankanbindung, Benutzervalidierung und sichere Passwortüberprüfung mit bcrypt:
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 auth.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Importiere benötigte Abhängigkeiten
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { authConfig } from './auth.config';
+import { z } from 'zod';
+import type { User } from '@/app/lib/definitions';
+import bcrypt from 'bcrypt';
+import postgres from 'postgres';
+
+// Initialisiere PostgreSQL-Verbindung mit SSL
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+/**
+ * Holt einen Benutzer aus der Datenbank anhand seiner E-Mail-Adresse
+ * @param email - Die E-Mail-Adresse des gesuchten Benutzers
+ * @returns Ein Promise, das den Benutzer oder undefined zurückgibt
+ */
+async function getUser(email: string): Promise<User | undefined> {
+  try {
+    const user = await sql<User[]>\`SELECT * FROM users WHERE email=\${email}\`;
+    return user[0];
+  } catch (error) {
+    console.error('Fehler beim Abrufen des Benutzers:', error);
+    throw new Error('Fehler beim Abrufen des Benutzers.');
+  }
+}
+
+// Exportiere die NextAuth-Konfiguration mit Authentifizierungsfunktionen
+export const { auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  providers: [
+    Credentials({
+      async authorize(credentials) {
+        // Validiere die eingegebenen Anmeldedaten mit Zod Schema
+        const parsedCredentials = z
+          .object({ email: z.string().email(), password: z.string().min(6) })
+          .safeParse(credentials);
+
+        if (parsedCredentials.success) {
+          const { email, password } = parsedCredentials.data;
+          // Suche den Benutzer in der Datenbank
+          const user = await getUser(email);
+          if (!user) return null;
+          // Vergleiche das eingegebene Passwort mit dem gespeicherten Hash
+          const passwordsMatch = await bcrypt.compare(password, user.password);
+
+          if (passwordsMatch) return user;
+        }
+
+        console.log('Ungültige Anmeldedaten');
+        return null;
+      },
+    }),
+  ],
+});`}</code>
+              </pre>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Login-Formular Komponente</h4>
+            <p className="mb-4">
+              Das Login-Formular ist eine Client-Komponente, die Server Actions für die Authentifizierung nutzt. 
+              Sie verarbeitet Weiterleitungs-URLs, validiert Benutzereingaben und zeigt Fehlermeldungen an. 
+              Die Komponente verwendet moderne React-Patterns wie useActionState für die Formularverarbeitung 
+              und bietet eine benutzerfreundliche Oberfläche mit Icon-Integration:
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/login-form.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`'use client';
+
+// Importiere benötigte Komponenten und Funktionen
+import { lusitana } from '@/app/ui/fonts';
+import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { Button } from '@/app/ui/button';
+import { useActionState } from 'react';
+import { authenticate } from '@/app/lib/actions';
+import { useSearchParams } from 'next/navigation';
+
+// Login-Formular Komponente für die Benutzerauthentifizierung
+export default function LoginForm() {
+  // Hole URL-Parameter und setze Standard-Weiterleitungs-URL
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  // Verwende useActionState für Formularaktionen und Fehlermeldungen
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined,
+  );
+
+  return (
+    <form action={formAction} className="space-y-3">
+      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+        <h1 className={\`\${lusitana.className} mb-3 text-2xl\`}>
+          Bitte melden Sie sich an, um fortzufahren.
+        </h1>
+
+        {/* Formular-Eingabefelder */}
+        <div className="w-full">
+          <div>
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="email"
+            >
+              E-Mail
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
+                required
+              />
+              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="password"
+            >
+              Passwort
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Geben Sie Ihr Passwort ein"
+                required
+                minLength={6}
+              />
+              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+        </div>
+        <Button className="mt-4 w-full" aria-disabled={isPending}>
+          Anmelden <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </Button>
+
+        {/* Fehleranzeige */}
+        <div className="flex h-8 items-end space-x-1">
+          {errorMessage && (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
+        </div>
+      </div>
+    </form>
+  );
+}`}</code>
+              </pre>
+            </div>
+
+          </section>
+
+          {/* Login Components */}
+          <section id="auth-components" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.2 Login-Komponenten</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Die Login-Komponenten bestehen aus einem Login-Formular und einer Server Action für die 
+              Authentifizierung. Das Formular erfasst die Benutzerdaten, während die Server Action die 
+              Authentifizierung verarbeitet und die Benutzeranmeldung steuert.
+            </p>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Login-Formular</h4>
+            <p className="mb-4">
+              Das Login-Formular ist eine Client-Komponente, die die Benutzereingaben erfasst und an die 
+              Server Action zur Verarbeitung sendet. Es bietet eine benutzerfreundliche Oberfläche mit 
+              integrierter Fehleranzeige.
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/login-form.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`'use client';
+
+// Importiere benötigte Komponenten und Funktionen
+import { lusitana } from '@/app/ui/fonts';
+import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { Button } from '@/app/ui/button';
+import { useActionState } from 'react';
+import { authenticate } from '@/app/lib/actions';
+import { useSearchParams } from 'next/navigation';
+
+// Login-Formular Komponente für die Benutzerauthentifizierung
+export default function LoginForm() {
+  // Hole URL-Parameter und setze Standard-Weiterleitungs-URL
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  // Verwende useActionState für Formularaktionen und Fehlermeldungen
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined,
+  );
+
+  return (
+    <form action={formAction} className="space-y-3">
+      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+        <h1 className={\`\${lusitana.className} mb-3 text-2xl\`}>
+          Bitte melden Sie sich an, um fortzufahren.
+        </h1>
+
+        {/* Formular-Eingabefelder */}
+        <div className="w-full">
+          <div>
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="email"
+            >
+              E-Mail
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
+                required
+              />
+              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="password"
+            >
+              Passwort
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Geben Sie Ihr Passwort ein"
+                required
+                minLength={6}
+              />
+              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+        </div>
+        <Button className="mt-4 w-full" aria-disabled={isPending}>
+          Anmelden <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </Button>
+
+        {/* Fehleranzeige */}
+        <div className="flex h-8 items-end space-x-1">
+          {errorMessage && (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
+        </div>
+      </div>
+    </form>
+  );
+}`}</code>
+              </pre>
+            </div>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Server Action: authenticate</h4>
+            <p className="mb-4">
+              Die Server Action <code className="text-sm bg-gray-100 px-1">authenticate</code> verarbeitet 
+              die Anmeldedaten, prüft die Benutzeranmeldung und verwaltet die Sitzung. Sie wird vom Login-Formular 
+              aufgerufen und steuert den Authentifizierungsworkflow.
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/lib/actions.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">
+{`'use server';
+
+import { authConfig } from './auth.config';
+import { sql } from './db';
+import { revalidatePath } from 'next/cache';
+import bcrypt from 'bcrypt';
+
+// Authentifiziert einen Benutzer mit E-Mail und Passwort
+export async function authenticate(formData: FormData) {
+  'use server';
+
+  // Extrahiere E-Mail und Passwort aus den Formulardaten
+  const email = formData.get('email')?.toString();
+  const password = formData.get('password')?.toString();
+
+  if (!email || !password) {
+    return {
+      success: false,
+      error: 'Bitte füllen Sie alle Felder aus.',
+    };
+  }
+
+  try {
+    // Suche den Benutzer in der Datenbank
+    const user = await sql\`SELECT * FROM users WHERE email = \${email}\`;
+
+    if (user.length === 0) {
+      return {
+        success: false,
+        error: 'Benutzer nicht gefunden.',
+      };
+    }
+
+    // Vergleiche das eingegebene Passwort mit dem gespeicherten Hash
+    const isPasswordValid = await bcrypt.compare(password, user[0].password);
+
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        error: 'Ungültiges Passwort.',
+      };
+    }
+
+    // Authentifizierung erfolgreich, setze die Sitzung
+    const { password: _, ...userData } = user[0]; // Entferne das Passwortfeld
+    revalidatePath('/dashboard'); // Cache für die Dashboard-Seite ungültig machen
+
+    return {
+      success: true,
+      redirect: '/dashboard',
+      user: userData,
+    };
+  } catch (error) {
+    console.error('Fehler bei der Authentifizierung:', error);
+    return {
+      success: false,
+      error: 'Fehler bei der Authentifizierung. Bitte versuchen Sie es später erneut.',
+    };
+  }
+}`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Protected Routes */}
+          <section id="auth-protection" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.3 Geschützte Routen</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Der Zugriff auf geschützte Bereiche wird durch den Next.js Middleware-Mechanismus 
+              kontrolliert. Dies ermöglicht eine zentrale Zugriffskontrolle für alle 
+              geschützten Routen.
+            </p>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Middleware für Routenschutz</h4>            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 middleware.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`/**
+ * Middleware für die Authentifizierung und Zugriffskontrolle
+ * 
+ * Diese Middleware wird bei jedem Request ausgeführt und prüft, ob der Benutzer
+ * berechtigt ist, auf die angeforderte Route zuzugreifen. Sie nutzt NextAuth.js
+ * für das Session-Management und die Authentifizierung.
+ */
+import NextAuth from 'next-auth';
+import { authConfig } from './auth.config';
+
+// Exportiere die Authentifizierungs-Middleware von NextAuth.js
+export default NextAuth(authConfig).auth;
+
+export const config = {
+  /**
+   * Matcher-Konfiguration definiert, für welche Routen die Middleware aktiv ist
+   * 
+   * Ausgeschlossen sind:
+   * - /api Routes (API-Endpoints)
+   * - /_next/static (statische Dateien)
+   * - /_next/image (optimierte Bilder)
+   * - *.png Dateien (Bilder)
+   * 
+   * Alle anderen Routen werden durch die Authentifizierung geschützt
+   */
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+};`}</code></pre>
+            </div>            <div className="bg-gray-50 rounded-lg p-6 mt-6">
+              <h4 className="font-semibold mb-2">Authentifizierungs-Workflow:</h4>
+              <ol className="list-decimal pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Request-Validierung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Eingehende Anfragen werden durch die Middleware überprüft. Statische Ressourcen 
+                    (Bilder, API-Routes) sind von der Authentifizierung ausgenommen, während alle anderen 
+                    Routen geschützt sind.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Session-Überprüfung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    NextAuth.js prüft das Session-Cookie und validiert den JWT-Token. Bei gültiger 
+                    Session wird der Benutzer-Kontext für die Anwendung bereitgestellt.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Autorisierung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Der authorized-Callback in auth.config.ts prüft die Zugriffsrechte basierend auf 
+                    der Route. Das Dashboard erfordert eine aktive Session, während die Dokumentation 
+                    öffentlich zugänglich ist.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Weiterleitung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Bei fehlendem Zugriff erfolgt eine automatische Weiterleitung zur Login-Seite, 
+                    wobei die ursprüngliche URL als callbackUrl gespeichert wird. Nach erfolgreicher 
+                    Anmeldung kehrt der Benutzer zur gewünschten Seite zurück.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Fehlerbehandlung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Ungültige Anmeldeversuche werden protokolliert, und dem Benutzer werden 
+                    aussagekräftige Fehlermeldungen angezeigt. Die Passwortvalidierung erfolgt 
+                    sicher über bcrypt.
+                  </p>
+                </li>
+              </ol>
+            </div>
+
+          </section>
+        </div>
+      </section>
     </main>
   );
 }
