@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function DocsPage() {
   return (
@@ -40,6 +41,17 @@ export default function DocsPage() {
               3.3 Geschützte Routen
             </Link>
           </div>
+          <Link href="#data-visualization" className="block hover:text-blue-600">
+            4. Datenvisualisierung mit Tremor
+          </Link>
+          <div className="pl-4 space-y-1">
+            <Link href="#tremor-architecture" className="block hover:text-blue-600 text-sm">
+              4.1 Server- und Client-Komponenten
+            </Link>
+            <Link href="#data-flow" className="block hover:text-blue-600 text-sm">
+              4.2 Datenintegration und Optimierung
+            </Link>
+          </div>
         </nav>
       </div>
 
@@ -75,7 +87,7 @@ export default function DocsPage() {
             <RequirementItem 
               text="Grafische Darstellung der Daten mit Hilfe einer geeigneten JS-Charting-Bibliothek"
               implemented={true}
-              details="Tremor für interaktive Diagramme"
+              details={<Link href="#data-visualization" className="text-blue-600 hover:underline">Tremor für interaktive Diagramme</Link>}
             />
             <RequirementItem 
               text="Möglichkeit der Selektion/Filterung von Daten auf Client- bzw. Server-Seite"
@@ -1087,6 +1099,254 @@ export const config = {
               </ol>
             </div>
 
+          </section>
+        </div>
+      </section>
+
+      {/* Data Visualization */}
+      <section id="data-visualization" className="mt-12 mb-12">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold mb-6">4. Datenvisualisierung mit Tremor</h2>
+          <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+            ↑ Nach oben
+          </Link>
+        </div>
+
+        <div className="prose max-w-none">
+          <p className="mb-6 text-lg">
+            Die Datenvisualisierung wird mit der Tremor-Bibliothek realisiert und nutzt die React Server 
+            Components Architektur von Next.js für optimale Performance. Die Implementierung teilt sich in 
+            Server- und Client-Komponenten auf.
+          </p>
+
+          {/* Architecture Section */}
+          <section id="tremor-architecture" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">4.1 Server- und Client-Komponenten</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Die Architektur der Datenvisualisierung folgt dem Server Components Pattern. Die Server-Komponente 
+              lädt die Daten, während die Client-Komponente die interaktive Visualisierung übernimmt.
+            </p>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Server-Komponente</h4>
+            <p className="mb-4">
+              Die Server-Komponente ist für das Laden der Zeitreihendaten verantwortlich. Sie nutzt direkte 
+              Datenbankzugriffe ohne zusätzliche API-Calls:
+            </p>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/dashboard/timeseries-chart.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`import { fetchTimeseriesData } from '@/app/lib/data';
+import TimeseriesChartClient from './timeseries-chart-client';
+
+export default async function TimeseriesChart() {
+  const data = await fetchTimeseriesData();
+  return <TimeseriesChartClient data={data} />;
+}`}</code>
+              </pre>
+            </div>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Client-Komponente</h4>
+            <p className="mb-4">
+              Die Client-Komponente ist für die interaktive Visualisierung zuständig und verwendet Tremor's 
+              LineChart-Komponente. Sie implementiert Features wie Tooltips, Achsenbeschriftungen und 
+              Animationen:
+            </p>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/dashboard/timeseries-chart-client.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`'use client';
+
+import { Card, Title, LineChart } from '@tremor/react';
+
+type TimeseriesDataPoint = {
+  seconds: number;
+  [key: string]: string | number | null;
+};
+
+export default function TimeseriesChartClient({ data }: { data: TimeseriesDataPoint[] }) {
+  if (!data || data.length === 0) {
+    return <p className="mt-4 text-gray-400">Keine Daten verfügbar.</p>;
+  }
+
+  return (
+    <Card className="w-full md:col-span-4">
+      <Title>Zeitreihen Visualisierung</Title>
+      <LineChart
+        className="mt-6 h-[350px]"
+        data={data}
+        index="seconds"
+        categories={Object.keys(data[0] || {}).filter(key => key !== 'seconds')}
+        colors={['indigo', 'cyan', 'orange']}
+        yAxisWidth={60}
+        showLegend={true}
+        showAnimation={true}
+        curveType="monotone"
+        valueFormatter={(value) => 
+          value != null ? value.toFixed(2) : 'N/A'
+        }
+      />
+    </Card>
+  );
+}`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Data Integration */}
+          <section id="data-flow" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">4.2 Datenintegration und Optimierung</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>            <p className="mb-4">
+              Die Integration der Messdaten in die Visualisierung erfolgt über den <Link href="#nextjs-api" className="text-blue-600 hover:underline">Data Access Layer</Link>, 
+              der die Daten direkt aus der PostgreSQL-Datenbank lädt und in Kapitel 2.1 detailliert beschrieben ist. Die Datenstruktur 
+              ist auf effiziente Verarbeitung und Darstellung ausgelegt.
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mt-6">
+              <h4 className="font-semibold mb-2">Optimierungen:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Server-seitiges Rendering</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Initiales Laden der Daten erfolgt auf dem Server, minimiert Time-to-First-Byte
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Dynamische Kanalverarbeitung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Automatische Erkennung und Darstellung aller verfügbaren Messkanäle
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Datenformatierung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Präzise Formatierung der Messwerte mit zwei Nachkommastellen für bessere Lesbarkeit
+                  </p>
+                </li>
+              </ul>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Integration in die Benutzeroberfläche</h4>            <p className="mb-4">
+              Die Visualisierung der Messdaten erfolgt innerhalb des Bearbeitungsformulars (`edit-form.tsx`). 
+              Als Client-Komponente (`'use client'`) ist sie für die interaktive Benutzeroberfläche zuständig 
+              und kombiniert die Diagrammdarstellung mit Formularfunktionen zur Datenverwaltung. Sie importiert 
+              die notwendigen Komponenten und Typen, bereitet die Messdaten für die Visualisierung auf und 
+              bettet das Diagramm in das Formular ein:
+            </p>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/analysis/edit-form.tsx
+              </div><pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`'use client';
+
+// Importiere benötigte Komponenten und Typen
+import { MeasurementForm, TimeseriesDataPoint } from '@/app/lib/definitions';
+import TimeseriesChartClient from '@/app/ui/dashboard/timeseries-chart-client';
+
+export default function EditAnalysisForm({
+  measurement,
+}: {
+  measurement: MeasurementForm;
+}) {
+  // Bereite die Daten für die Diagrammdarstellung vor
+  const chartData = measurement.data.map(point => {
+    // Erstelle dynamisch ein Objekt mit allen Kanälen
+    const channelData: { [key: string]: number | null } = {};
+    
+    // Weise die Messwerte den entsprechenden Kanälen zu
+    measurement.channels.forEach((channel) => {
+      channelData[channel] = point[channel] ?? null;
+    });
+    
+    return {
+      seconds: point.seconds_from_start,
+      ...channelData
+    };
+  }) as TimeseriesDataPoint[];
+
+  return (
+    <form action={formAction}>
+      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+        {/* Diagrammbereich */}
+        <div className="mb-8">
+          <h2 className="mb-4 text-lg font-semibold">Messdaten Visualisierung</h2>
+          <div className="rounded-md border border-gray-200 bg-white p-4">
+            <TimeseriesChartClient data={chartData} />
+          </div>
+        </div>
+        {/* ...Rest des Formulars... */}
+      </div>
+    </form>
+  );
+}`}</code>
+              </pre>
+            </div>
+
+            <p className="mt-4 mb-4">
+              Die Edit-Seite selbst ist für das Laden der Messungsdaten zuständig und übergibt diese 
+              an das Formular:
+            </p>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/dashboard/analysis/[id]/edit/page.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`export default async function Page(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const id = params.id;
+
+  // Hole die Messungsdaten aus der Datenbank
+  const rawMeasurement = await fetchMeasurementById(id);
+  if (!rawMeasurement) {
+    notFound();
+  }
+
+  const measurement: MeasurementForm = {
+    ...rawMeasurement,
+    id,
+    filename: rawMeasurement.filename || '',
+    description: rawMeasurement.description || '',
+    status: rawMeasurement.status || 'offen'
+  };
+  
+  return (
+    <main>
+      <Breadcrumbs breadcrumbs={[/* ... */]} />
+      <Form measurement={measurement} />
+    </main>
+  );
+}`}</code>              </pre>
+            </div>
+
+            <p className="mt-8 mb-4">
+              Die folgende Abbildung zeigt die fertige Integration des Tremor-Liniendiagramms in der 
+              Bearbeitungsansicht, zusammen mit den Formularfeldern für Metadaten und Validierungsstatus:
+            </p>
+
+            <div className="mt-4 mb-8">
+              <Image 
+                src="/docs/edit.png"
+                alt="Screenshot der Bearbeitungsansicht mit integriertem Liniendiagramm"
+                width={1000}
+                height={800}
+                className="rounded-lg border border-gray-200"
+              />
+            </div>
           </section>
         </div>
       </section>
