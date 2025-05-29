@@ -56,18 +56,18 @@ export default function DocsPage() {
               2.3 Gesamtarchitektur und Integration
             </Link>
           </div>
-          <Link href="#auth" className="block hover:text-blue-600">
-            3. Authentifizierung und Zugriffskontrolle
+          <Link href="#filtering-pagination" className="block hover:text-blue-600">
+            3. Filterung und Paginierung
           </Link>
           <div className="pl-4 space-y-1">
-            <Link href="#auth-setup" className="block hover:text-blue-600 text-sm">
-              3.1 NextAuth.js Konfiguration
+            <Link href="#search-implementation" className="block hover:text-blue-600 text-sm">
+              3.1 Implementierung der Suchfunktion
             </Link>
-            <Link href="#auth-components" className="block hover:text-blue-600 text-sm">
-              3.2 Login-Komponenten
+            <Link href="#pagination-implementation" className="block hover:text-blue-600 text-sm">
+              3.2 Paginierung der Ergebnisse
             </Link>
-            <Link href="#auth-protection" className="block hover:text-blue-600 text-sm">
-              3.3 Geschützte Routen
+            <Link href="#search-pagination-integration" className="block hover:text-blue-600 text-sm">
+              3.3 Integration und Optimierung
             </Link>
           </div>
           <Link href="#data-visualization" className="block hover:text-blue-600">
@@ -81,18 +81,18 @@ export default function DocsPage() {
               4.2 Datenintegration und Optimierung
             </Link>
           </div>
-          <Link href="#filtering-pagination" className="block hover:text-blue-600">
-            5. Filterung und Paginierung
+          <Link href="#auth" className="block hover:text-blue-600">
+            5. Authentifizierung und Zugriffskontrolle
           </Link>
           <div className="pl-4 space-y-1">
-            <Link href="#search-implementation" className="block hover:text-blue-600 text-sm">
-              5.1 Implementierung der Suchfunktion
+            <Link href="#auth-setup" className="block hover:text-blue-600 text-sm">
+              5.1 NextAuth.js Konfiguration
             </Link>
-            <Link href="#pagination-implementation" className="block hover:text-blue-600 text-sm">
-              5.2 Paginierung der Ergebnisse
+            <Link href="#auth-components" className="block hover:text-blue-600 text-sm">
+              5.2 Login-Komponenten
             </Link>
-            <Link href="#search-pagination-integration" className="block hover:text-blue-600 text-sm">
-              5.3 Integration und Optimierung
+            <Link href="#auth-protection" className="block hover:text-blue-600 text-sm">
+              5.3 Geschützte Routen
             </Link>
           </div>
         </nav>
@@ -606,10 +606,10 @@ export async function importMeasurement(id: string) {
         </div>
       </section>
 
-      {/* Authentication */}
-      <section id="auth" className="mt-12 mb-12">
+          {/* Filtering and Pagination */}
+          <section id="filtering-pagination" className="mt-12 mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">3. Authentifizierung und Zugriffskontrolle</h2>
+          <h2 className="text-2xl font-bold mb-6">3. Filterung und Paginierung</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -617,533 +617,386 @@ export async function importMeasurement(id: string) {
 
         <div className="prose max-w-none">
           <p className="mb-6 text-lg">
-            Die Anwendung implementiert ein robustes Authentifizierungssystem basierend auf NextAuth.js, 
-            das den Zugriff auf geschützte Ressourcen kontrolliert und eine sichere Benutzeranmeldung 
-            ermöglicht.
-          </p>
+            Die Implementierung der Datenfilterung und Paginierung erfolgt serverseitig für optimale 
+            Performance und Skalierbarkeit. Die Funktionalität ist in der Analyseseite integriert und 
+            nutzt den <Link href="#nextjs-api" className="text-blue-600 hover:underline">Data Access Layer</Link> für 
+            effiziente Datenbankabfragen.
+          </p>          {/* Datenflussdiagramm */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-semibold mb-4 text-center">Datenflussdiagramm: Such- und Filterprozess</h3>
+            <div className="flex justify-center">
+              <Image 
+                src="/docs/search-flow.png"
+                alt="Datenflussdiagramm des Such- und Filterprozesses"
+                width={800}
+                height={400}
+                className="rounded-lg border border-gray-200 shadow-md"
+              />
+            </div>
+            <p className="mt-4 text-sm text-gray-600">
+              Das Diagramm visualisiert den Datenfluss bei der Suche und Filterung von Messungen:
+              Die Benutzereingabe wird in URL-Parameter übersetzt, die von der Server-Komponente 
+              verarbeitet werden. Der Data Access Layer führt die SQL-Abfrage aus, und die 
+              gefilterten Ergebnisse werden dem Benutzer angezeigt.
+            </p>
+          </div>
 
-          {/* NextAuth.js Setup */}
-          <section id="auth-setup" className="mb-8">
+          {/* Search Implementation */}
+          <section id="search-implementation" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">3.1 NextAuth.js Konfiguration</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.1 Implementierung der Suchfunktion</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
+            </div>              <p className="mb-4">
+              Die Suchfunktion basiert auf URL-Parametern und Server-Components. Die Suchkomponente 
+              aktualisiert die URL, was eine neue Server-Anfrage auslöst und die gefilterten 
+              Ergebnisse lädt. Um die Server-Last zu minimieren und die Benutzerfreundlichkeit zu erhöhen, 
+              wird die Suchanfrage durch Debouncing verzögert: Erst wenn der Benutzer für 300ms keine 
+              weiteren Eingaben macht, wird die Suche ausgeführt. Dies verhindert unnötige Anfragen 
+              während des Tippens und sorgt für eine flüssigere Benutzeroberfläche.
+            </p>            <div className="bg-gray-50 rounded-lg p-6 mb-4">
+              <h4 className="font-semibold mb-2">SQL-Implementierung:</h4>
+              <p className="mb-2">
+                Die Hauptsuche basiert auf einer optimierten SQL-Abfrage mit mehreren fortgeschrittenen Features:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Common Table Expression (CTE)</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Vorberechnung der Kanalanzahl pro Messung durch Gruppierung, reduziert Komplexität der Hauptabfrage
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">LEFT JOINs</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Verknüpfung von Messungen (measurements) mit Metadaten und vorberechneten Kanalzählungen
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">ILIKE für Volltextsuche</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Case-insensitive Suche in Dateinamen und Beschreibungen mit Platzhaltern (%term%)
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">COALESCE für NULL-Handling</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Sichere Behandlung von Messungen ohne Kanäle durch Standardwert 0
+                  </p>
+                </li>
+              </ul>
             </div>
 
-            <p className="mb-4">
-              Die Authentifizierung wird durch NextAuth.js bereitgestellt und nutzt einen 
-              Credentials Provider für die Benutzeranmeldung. Die Konfiguration erfolgt in 
-              mehreren zentralen Dateien.
-            </p>
-
-            <h4 className="text-lg font-semibold mt-6 mb-4">Auth Konfiguration</h4>            <p className="mb-4">
-              Die Basis-Konfiguration für NextAuth.js definiert die grundlegenden Authentifizierungseinstellungen, 
-              insbesondere die Zugriffskontrolle für geschützte Routen und die Weiterleitung bei fehlender Berechtigung:
-            </p>
             <div className="rounded-lg overflow-hidden">
               <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 auth.config.ts
+                📄 app/lib/data.ts (Suchabfrage)
               </div>
               <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`// Importiere den NextAuth Konfigurationstyp
-import type { NextAuthConfig } from 'next-auth';
-
-/**
- * Hauptkonfiguration für NextAuth
- * Definiert das Authentifizierungsverhalten der Anwendung
- */
-export const authConfig = {
-  // Konfiguration der Authentifizierungsseiten
-  pages: {
-    signIn: '/login', // Pfad zur Login-Seite
-  },
-  callbacks: {
-    /**
-     * Callback zur Autorisierungsprüfung
-     * Kontrolliert den Zugriff auf geschützte Routen und Weiterleitungen
-     * @param auth - Authentifizierungsstatus des Benutzers
-     * @param nextUrl - Ziel-URL des Requests
-     */
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      const isOnDocs = nextUrl.pathname.startsWith('/docs');
-
-      // Erlaube Zugriff auf Dokumentation ohne Login
-      if (isOnDocs) return true;
-
-      // Prüfe Zugriffsberechtigung für Dashboard
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Leite nicht authentifizierte Benutzer zur Login-Seite weiter
-      } else if (isLoggedIn && !isOnDocs) {
-        return Response.redirect(new URL('/dashboard', nextUrl));
-      }
-      return true;
-    },
-  },
-  providers: [], // Provider-Array bleibt vorerst leer, wird in auth.ts konfiguriert
-} satisfies NextAuthConfig;`}</code>
-              </pre>
-            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Credentials Provider</h4>
-            <p className="mb-4">
-              Die Implementierung der Benutzerauthentifizierung erfolgt über einen Credentials Provider, 
-              der die Anmeldedaten gegen die PostgreSQL-Datenbank prüft. Die Datei beinhaltet die 
-              Datenbankanbindung, Benutzervalidierung und sichere Passwortüberprüfung mit bcrypt:
-            </p>
-            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 auth.ts
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`// Importiere benötigte Abhängigkeiten
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { authConfig } from './auth.config';
-import { z } from 'zod';
-import type { User } from '@/app/lib/definitions';
-import bcrypt from 'bcrypt';
-import postgres from 'postgres';
-
-// Initialisiere PostgreSQL-Verbindung mit SSL
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
-/**
- * Holt einen Benutzer aus der Datenbank anhand seiner E-Mail-Adresse
- * @param email - Die E-Mail-Adresse des gesuchten Benutzers
- * @returns Ein Promise, das den Benutzer oder undefined zurückgibt
- */
-async function getUser(email: string): Promise<User | undefined> {
-  try {
-    const user = await sql<User[]>\`SELECT * FROM users WHERE email=\${email}\`;
-    return user[0];
-  } catch (error) {
-    console.error('Fehler beim Abrufen des Benutzers:', error);
-    throw new Error('Fehler beim Abrufen des Benutzers.');
-  }
-}
-
-// Exportiere die NextAuth-Konfiguration mit Authentifizierungsfunktionen
-export const { auth, signIn, signOut } = NextAuth({
-  ...authConfig,
-  providers: [
-    Credentials({
-      async authorize(credentials) {
-        // Validiere die eingegebene Anmeldedaten mit Zod Schema
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
-
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
-          // Suche den Benutzer in der Datenbank
-          const user = await getUser(email);
-          if (!user) return null;
-          // Vergleiche das eingegebene Passwort mit dem gespeicherten Hash
-          const passwordsMatch = await bcrypt.compare(password, user.password);
-
-          if (passwordsMatch) return user;
-        }
-
-        console.log('Ungültige Anmeldedaten');
-        return null;
-      },
-    }),
-  ],
-});`}</code>
-              </pre>
-            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Login-Formular Komponente</h4>
-            <p className="mb-4">
-              Das Login-Formular ist eine Client-Komponente, die Server Actions für die Authentifizierung nutzt. 
-              Sie verarbeitet Weiterleitungs-URLs, validiert Benutzereingaben und zeigt Fehlermeldungen an. 
-              Die Komponente verwendet moderne React-Patterns wie useActionState für die Formularverarbeitung 
-              und bietet eine benutzerfreundliche Oberfläche mit Icon-Integration:
-            </p>
-            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/ui/login-form.tsx
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`'use client';
-
-// Importiere benötigte Komponenten und Funktionen
-import { lusitana } from '@/app/ui/fonts';
-import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from '@/app/ui/button';
-import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
-import { useSearchParams } from 'next/navigation';
-
-// Login-Formular Komponente für die Benutzerauthentifizierung
-export default function LoginForm() {
-  // Hole URL-Parameter und setze Standard-Weiterleitungs-URL
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  // Verwende useActionState für Formularaktionen und Fehlermeldungen
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined,
-  );
-
-  return (
-    <form action={formAction} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={\`\${lusitana.className} mb-3 text-2xl\`}>
-          Bitte melden Sie sich an, um fortzufahren.
-        </h1>
-
-        {/* Formular-Eingabefelder */}
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              E-Mail
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              Passwort
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Geben Sie Ihr Passwort ein"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-        </div>
-        <Button className="mt-4 w-full" aria-disabled={isPending}>
-          Anmelden <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-        </Button>
-
-        {/* Fehleranzeige */}
-        <div className="flex h-8 items-end space-x-1">
-          {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
-        </div>
-      </div>
-    </form>
-  );
-}`}</code>
-              </pre>
-            </div>
-
-          </section>
-
-          {/* Login Components */}
-          <section id="auth-components" className="mb-8">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">3.2 Login-Komponenten</h3>
-              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
-                ↑ Nach oben
-              </Link>
-            </div>
-
-            <p className="mb-4">
-              Die Login-Komponenten bestehen aus einem Login-Formular und einer Server Action für die 
-              Authentifizierung. Das Formular erfasst die Benutzerdaten, während die Server Action die 
-              Authentifizierung verarbeitet und die Benutzeranmeldung steuert.
-            </p>
-
-            <h4 className="text-lg font-semibold mt-6 mb-4">Login-Formular</h4>
-            <p className="mb-4">
-              Das Login-Formular ist eine Client-Komponente, die die Benutzereingaben erfasst und an die 
-              Server Action zur Verarbeitung sendet. Es bietet eine benutzerfreundliche Oberfläche mit 
-              integrierter Fehleranzeige.
-            </p>
-            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/ui/login-form.tsx
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`'use client';
-
-// Importiere benötigte Komponenten und Funktionen
-import { lusitana } from '@/app/ui/fonts';
-import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from '@/app/ui/button';
-import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
-import { useSearchParams } from 'next/navigation';
-
-// Login-Formular Komponente für die Benutzerauthentifizierung
-export default function LoginForm() {
-  // Hole URL-Parameter und setze Standard-Weiterleitungs-URL
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  // Verwende useActionState für Formularaktionen und Fehlermeldungen
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined,
-  );
-
-  return (
-    <form action={formAction} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={\`\${lusitana.className} mb-3 text-2xl\`}>
-          Bitte melden Sie sich an, um fortzufahren.
-        </h1>
-
-        {/* Formular-Eingabefelder */}
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              E-Mail
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              Passwort
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Geben Sie Ihr Passwort ein"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-        </div>
-        <Button className="mt-4 w-full" aria-disabled={isPending}>
-          Anmelden <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-        </Button>
-
-        {/* Fehleranzeige */}
-        <div className="flex h-8 items-end space-x-1">
-          {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
-        </div>
-      </div>
-    </form>
-  );
-}`}</code>
-              </pre>
-            </div>
-
-            <h4 className="text-lg font-semibold mt-6 mb-4">Server Action: authenticate</h4>
-            <p className="mb-4">
-              Die Server Action <code className="text-sm bg-gray-100 px-1">authenticate</code> verarbeitet 
-              die Anmeldedaten, prüft die Benutzeranmeldung und verwaltet die Sitzung. Sie wird vom Login-Formular 
-              aufgerufen und steuert den Authentifizierungsworkflow.
-            </p>
-            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/lib/actions.ts
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">
-{`'use server';
-
-import { authConfig } from './auth.config';
-import { sql } from './db';
-import { revalidatePath } from 'next/cache';
-import bcrypt from 'bcrypt';
-
-// Authentifiziert einen Benutzer mit E-Mail und Passwort
-export async function authenticate(formData: FormData) {
-  'use server';
-
-  // Extrahiere E-Mail und Passwort aus den Formulardaten
-  const email = formData.get('email')?.toString();
-  const password = formData.get('password')?.toString();
-
-  if (!email || !password) {
-    return {
-      success: false,
-      error: 'Bitte füllen Sie alle Felder aus.',
-    };
-  }
+                <code className="language-typescript">{`export async function fetchFilteredMeasurements(query: string, currentPage: number) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    // Suche den Benutzer in der Datenbank
-    const user = await sql\`SELECT * FROM users WHERE email = \${email}\`;
+    const measurements = await sql\`
+      WITH ChannelCounts AS (
+        SELECT measurement_id, COUNT(*) as channel_count
+        FROM measurement_channels
+        GROUP BY measurement_id
+      )
+      SELECT 
+        m.id,
+        meta.filename,
+        meta.description,
+        meta.status,
+        m.created_at,
+        COALESCE(cc.channel_count, 0) as channel_count
+      FROM measurements m
+      LEFT JOIN metadata meta ON m.id = meta.measurement_id
+      LEFT JOIN ChannelCounts cc ON m.id = cc.measurement_id
+      WHERE
+        meta.filename ILIKE \${\'%\' + query + \'%\'} OR
+        meta.description ILIKE \${\'%\' + query + \'%\'}
+      ORDER BY m.created_at DESC
+      LIMIT \${ITEMS_PER_PAGE} OFFSET \${offset}
+    \`;
 
-    if (user.length === 0) {
-      return {
-        success: false,
-        error: 'Benutzer nicht gefunden.',
-      };
-    }
-
-    // Vergleiche das eingegebene Passwort mit dem gespeicherten Hash
-    const isPasswordValid = await bcrypt.compare(password, user[0].password);
-
-    if (!isPasswordValid) {
-      return {
-        success: false,
-        error: 'Ungültiges Passwort.',
-      };
-    }
-
-    // Authentifizierung erfolgreich, setze die Sitzung
-    const { password: _, ...userData } = user[0]; // Entferne das Passwortfeld
-    revalidatePath('/dashboard'); // Cache für die Dashboard-Seite ungültig machen
-
-    return {
-      success: true,
-      redirect: '/dashboard',
-      user: userData,
-    };
+    return measurements;
   } catch (error) {
-    console.error('Fehler bei der Authentifizierung:', error);
-    return {
-      success: false,
-      error: 'Fehler bei der Authentifizierung. Bitte versuchen Sie es später erneut.',
-    };
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der gefilterten Messungen.');
   }
 }`}</code>
               </pre>
             </div>
           </section>
 
-          {/* Protected Routes */}
-          <section id="auth-protection" className="mb-8">
+          {/* Pagination Implementation */}
+          <section id="pagination-implementation" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">3.3 Geschützte Routen</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.2 Paginierung der Ergebnisse</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
-            </div>
-
-            <p className="mb-4">
-              Der Zugriff auf geschützte Bereiche wird durch den Next.js Middleware-Mechanismus 
-              kontrolliert. Dies ermöglicht eine zentrale Zugriffskontrolle für alle 
-              geschützten Routen.
+            </div>            <p className="mb-4">
+              Die Paginierung ist als Client-Komponente implementiert, die nahtlos mit der Server-seitigen 
+              Suchfunktion zusammenarbeitet. Der Zustand der Paginierung wird in den URL-Parametern 
+              gespeichert, wodurch die Navigation durch die Ergebnisse auch bei einem Browser-Refresh 
+              erhalten bleibt.
             </p>
 
-            <h4 className="text-lg font-semibold mt-6 mb-4">Middleware für Routenschutz</h4>            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 middleware.ts
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`/**
- * Middleware für die Authentifizierung und Zugriffskontrolle
- * 
- * Diese Middleware wird bei jedem Request ausgeführt und prüft, ob der Benutzer
- * berechtigt ist, auf die angeforderte Route zuzugreifen. Sie nutzt NextAuth.js
- * für das Session-Management und die Authentifizierung.
- */
-import NextAuth from 'next-auth';
-import { authConfig } from './auth.config';
+            <p className="mb-4">
+              Die Paginierungskomponente besteht aus drei Hauptteilen:
+            </p>
 
-// Exportiere die Authentifizierungs-Middleware von NextAuth.js
-export default NextAuth(authConfig).auth;
+            <ul className="list-disc pl-6 mb-4 space-y-2">
+              <li><span className="font-medium">Pagination</span> - Hauptkomponente für die gesamte Seitennavigation</li>
+              <li><span className="font-medium">PaginationNumber</span> - Komponente für die einzelnen Seitenzahlen</li>
+              <li><span className="font-medium">PaginationArrow</span> - Komponente für die Vor/Zurück-Navigation</li>
+            </ul>
 
-export const config = {
-  /**
-   * Matcher-Konfiguration definiert, für welche Routen die Middleware aktiv ist
-   * 
-   * Ausgeschlossen sind:
-   * - /api Routes (API-Endpoints)
-   * - /_next/static (statische Dateien)
-   * - /_next/image (optimierte Bilder)
-   * - *.png Dateien (Bilder)
-   * 
-   * Alle anderen Routen werden durch die Authentifizierung geschützt
-   */
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-};`}</code></pre>
-            </div>            <div className="bg-gray-50 rounded-lg p-6 mt-6">
-              <h4 className="font-semibold mb-2">Authentifizierungs-Workflow:</h4>
-              <ol className="list-decimal pl-6 space-y-2">
+            <p className="mb-4">Der relevante Code für die Hauptfunktionalität ist:</p>
+
+            <div className="rounded-lg overflow-hidden">              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/pagination.tsx
+              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Markiere dies als Client-Komponente, da sie interaktive Elemente enthält
+'use client';
+
+// Importiere benötigte Komponenten und Module
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';  // Pfeil-Icons für Navigation
+import clsx from 'clsx';                   // Utility für bedingte CSS-Klassen
+import Link from 'next/link';              // Next.js Link-Komponente
+import { generatePagination } from '@/app/lib/utils';  // Hilfsfunktion zur Seitennummerierung
+import { usePathname, useSearchParams } from 'next/navigation';  // Hooks für URL-Parameter
+
+// Hauptkomponente für die Seitennavigation
+export default function Pagination({ totalPages }: { totalPages: number }) {
+  // Hole aktuelle URL-Informationen
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  // Ermittle aktuelle Seite aus URL-Parametern (Standard: Seite 1)
+  const currentPage = Number(searchParams.get('page')) || 1;
+
+  // Hilfsfunktion zum Erstellen der URLs für Seitenwechsel
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return \`\${pathname}?\${params.toString()}\`;
+  };
+
+  // Generiere Array mit allen Seitenzahlen und ggf. Auslassungspunkten
+  const allPages = generatePagination(currentPage, totalPages);
+  return (
+    <>
+      {/* Container für die Paginierung */}
+      <div className="inline-flex">
+        {/* Pfeil für vorherige Seite */}
+        <PaginationArrow
+          direction="left"
+          href={createPageURL(currentPage - 1)}
+          isDisabled={currentPage <= 1}  // Deaktiviert auf Seite 1
+        />
+
+        <div className="flex -space-x-px">
+          {allPages.map((page, index) => {
+            let position: 'first' | 'last' | 'single' | 'middle' | undefined;
+
+            if (index === 0) position = 'first';
+            if (index === allPages.length - 1) position = 'last';
+            if (allPages.length === 1) position = 'single';
+            if (page === '...') position = 'middle';
+
+            return (
+              <PaginationNumber
+                key={\`\${page}-\${index}\`}
+                href={createPageURL(page)}
+                page={page}
+                position={position}
+                isActive={currentPage === page}
+              />
+            );
+          })}
+        </div>
+
+        <PaginationArrow
+          direction="right"
+          href={createPageURL(currentPage + 1)}
+          isDisabled={currentPage >= totalPages}
+        />
+      </div>
+    </>
+  );
+}`}</code>
+              </pre>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Paginierungslogik</h4>
+            <p className="mb-4">
+              Die Hilfsfunktion <code>generatePagination</code> aus <code>utils.ts</code> erzeugt ein 
+              intelligentes Layout für die Seitenzahlen. Diese Funktion wird von der Pagination-Komponente 
+              verwendet, um eine intuitive Navigation zu ermöglichen. Je nach Position der aktuellen Seite 
+              wird das Layout dynamisch angepasst:
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-4">
+              <h5 className="font-semibold mb-2">Anpassungsfälle:</h5>
+              <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <span className="font-medium">Request-Validierung</span>
+                  <span className="font-medium">Wenige Seiten (≤7)</span>
                   <p className="text-sm text-gray-600 mt-1">
-                    Eingehende Anfragen werden durch die Middleware überprüft. Statische Ressourcen 
-                    (Bilder, API-Routes) sind von der Authentifizierung ausgenommen, während alle anderen 
-                    Routen geschützt sind.
+                    Alle Seitenzahlen werden direkt angezeigt, keine Auslassungspunkte nötig
                   </p>
                 </li>
                 <li>
-                  <span className="font-medium">Session-Überprüfung</span>
+                  <span className="font-medium">Nahe am Anfang (≤3)</span>
                   <p className="text-sm text-gray-600 mt-1">
-                    NextAuth.js prüft das Session-Cookie und validiert den JWT-Token. Bei gültiger 
-                    Session wird der Benutzer-Kontext für die Anwendung bereitgestellt.
+                    Zeigt die ersten drei Seiten, dann Auslassungspunkte und die letzten zwei Seiten
                   </p>
                 </li>
                 <li>
-                  <span className="font-medium">Autorisierung</span>
+                  <span className="font-medium">Nahe am Ende</span>
                   <p className="text-sm text-gray-600 mt-1">
-                    Der authorized-Callback in auth.config.ts prüft die Zugriffsrechte basierend auf 
-                    der Route. Das Dashboard erfordert eine aktive Session, während die Dokumentation 
-                    öffentlich zugänglich ist.
+                    Zeigt die ersten zwei, Auslassungspunkte und die letzten drei Seiten
                   </p>
                 </li>
                 <li>
-                  <span className="font-medium">Weiterleitung</span>
+                  <span className="font-medium">In der Mitte</span>
                   <p className="text-sm text-gray-600 mt-1">
-                    Bei fehlendem Zugriff erfolgt eine automatische Weiterleitung zur Login-Seite, 
-                    wobei die ursprüngliche URL als callbackUrl gespeichert wird. Nach erfolgreicher 
-                    Anmeldung kehrt der Benutzer zur gewünschten Seite zurück.
+                    Zeigt die erste Seite, Auslassungspunkte, die aktuelle Seite mit Nachbarn, weitere Auslassungspunkte und die letzte Seite
                   </p>
                 </li>
-                <li>
-                  <span className="font-medium">Fehlerbehandlung</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Ungültige Anmeldeversuche werden protokolliert, und dem Benutzer werden 
-                    aussagekräftige Fehlermeldungen angezeigt. Die Passwortvalidierung erfolgt 
-                    sicher über bcrypt.
-                  </p>
-                </li>
-              </ol>
+              </ul>
             </div>
 
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/lib/utils.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Generiert ein Array von Seitenzahlen für die Paginierung
+export const generatePagination = (currentPage: number, totalPages: number) => {
+  // Falls die Gesamtzahl der Seiten 7 oder weniger beträgt,
+  // zeige alle Seiten ohne Auslassungspunkte an
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  // Falls die aktuelle Seite unter den ersten 3 Seiten ist,
+  // zeige die ersten 3, Auslassungspunkte und die letzten 2 Seiten
+  if (currentPage <= 3) {
+    return [1, 2, 3, '...', totalPages - 1, totalPages];
+  }
+
+  // Falls die aktuelle Seite unter den letzten 3 Seiten ist,
+  // zeige die ersten 2, Auslassungspunkte und die letzten 3 Seiten
+  if (currentPage >= totalPages - 2) {
+    return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  // Falls die aktuelle Seite irgendwo in der Mitte liegt,
+  // zeige die erste Seite, Auslassungspunkte, die aktuelle Seite und ihre Nachbarn,
+  // weitere Auslassungspunkte und die letzte Seite
+  return [
+    1,
+    '...',
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    '...',
+    totalPages,
+  ];
+};`}</code>
+              </pre>
+            </div>
+          </section>          {/* Integration */}
+          <section id="search-pagination-integration" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.3 Integration und Optimierung</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>            <p className="mb-4">
+              Die Integration von Suche und Paginierung erfolgt in der Messungsübersicht 
+              (<code>app/dashboard/analysis/page.tsx</code>). Diese Server-Komponente implementiert 
+              eine optimierte Datenverarbeitung mit URL-basierten Suchparametern, asynchronem Laden 
+              durch Suspense und einer benutzerfreundlichen Oberfläche mit responsivem Design.
+            </p>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/dashboard/analysis/page.tsx
+              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Importiere die benötigten Komponenten und Module
+import Pagination from '@/app/ui/pagination';           // Komponente für die Seitennavigation
+import Search from '@/app/ui/search';                  // Suchleiste
+import Table from '@/app/ui/analysis/table';           // Tabelle für die Messungsliste 
+import { CreateAnalysis } from '@/app/ui/analysis/buttons';  // Button zum Erstellen einer neuen Auswertung
+import { lusitana } from '@/app/ui/fonts';            // Spezielle Schriftart für Überschriften
+import { MeasurementsTableSkeleton } from '@/app/ui/skeletons';  // Lade-Animation für die Tabelle
+import { Suspense } from 'react';                     // React-Komponente für asynchrones Laden
+import { fetchMeasurementsPages } from '@/app/lib/data';  // Funktion zum Abrufen der Seitenanzahl
+import { Metadata } from 'next';                      // Next.js Metadaten-Typ
+
+// Definiere die Metadaten für die Seite (wird im Browser-Tab angezeigt)
+export const metadata: Metadata = {
+  title: 'Messungen',
+};
+
+// Hauptkomponente der Messungsübersicht
+// Props enthalten die URL-Suchparameter für Suche und Paginierung
+export default async function Page(props: {
+    searchParams?: Promise<{
+      query?: string;      // Suchbegriff aus der URL
+      page?: string;       // Aktuelle Seitennummer
+    }>;
+  }) {
+    // Extrahiere und verarbeite die URL-Parameter
+    const searchParams = await props.searchParams;
+    const query = searchParams?.query || '';              // Suchbegriff (leer wenn nicht vorhanden)
+    const currentPage = Number(searchParams?.page) || 1;  // Aktuelle Seite (1 wenn nicht vorhanden)
+    const totalPages = await fetchMeasurementsPages(query);  // Hole Gesamtanzahl der Seiten
+   
+    return (
+      <div className="w-full">
+        {/* Kopfbereich mit Titel */}
+        <div className="flex w-full items-center justify-between">
+          <h1 className={\`\${lusitana.className} text-2xl\`}>Messungen</h1>
+        </div>
+        {/* Suchleiste und Button für neue Auswertung */}
+        <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+          <Search placeholder="Messungen durchsuchen..." />
+          <CreateAnalysis />
+        </div>
+        {/* Tabelle mit Messungen, eingepackt in Suspense für asynchrones Laden */}
+        <Suspense key={query + currentPage} fallback={<MeasurementsTableSkeleton />}>
+          <Table query={query} currentPage={currentPage} />
+        </Suspense>
+        {/* Seitennavigation */}
+        <div className="mt-5 flex w-full justify-center">
+          <Pagination totalPages={totalPages} />
+        </div>
+      </div>
+    );
+  }`}</code>
+              </pre>            </div>
           </section>
+
+          <div className="mt-8 mb-4">
+            <h4 className="text-lg font-semibold mb-4">Fertige Implementierung</h4>
+            <p className="mb-4">
+              Die folgende Abbildung zeigt die fertige Implementierung der Analyseseite mit allen 
+              integrierten Komponenten: der Suchleiste, der Messungstabelle mit Statusanzeigen und 
+              der Paginierung am unteren Rand:
+            </p>            <div className="mt-4 mb-8">
+              <div className="flex justify-center">
+                <Image 
+                  src="/docs/analysis.png"
+                  alt="Screenshot der Analyseseite mit Suchfunktion, Messungstabelle und Paginierung"
+                  width={1000}
+                  height={800}
+                  className="rounded-lg border border-gray-200 shadow-md"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1414,10 +1267,11 @@ export default function EditAnalysisForm({
           </section>
         </div>
       </section>
-          {/* Filtering and Pagination */}
-          <section id="filtering-pagination" className="mt-12 mb-12">
+
+            {/* Authentication */}
+      <section id="auth" className="mt-12 mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">5. Filterung und Paginierung</h2>
+          <h2 className="text-2xl font-bold mb-6">5. Authentifizierung und Zugriffskontrolle</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -1425,386 +1279,533 @@ export default function EditAnalysisForm({
 
         <div className="prose max-w-none">
           <p className="mb-6 text-lg">
-            Die Implementierung der Datenfilterung und Paginierung erfolgt serverseitig für optimale 
-            Performance und Skalierbarkeit. Die Funktionalität ist in der Analyseseite integriert und 
-            nutzt den <Link href="#nextjs-api" className="text-blue-600 hover:underline">Data Access Layer</Link> für 
-            effiziente Datenbankabfragen.
-          </p>          {/* Datenflussdiagramm */}
-          <div className="bg-gray-50 rounded-lg p-6 mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-center">Datenflussdiagramm: Such- und Filterprozess</h3>
-            <div className="flex justify-center">
-              <Image 
-                src="/docs/search-flow.png"
-                alt="Datenflussdiagramm des Such- und Filterprozesses"
-                width={800}
-                height={400}
-                className="rounded-lg border border-gray-200 shadow-md"
-              />
-            </div>
-            <p className="mt-4 text-sm text-gray-600">
-              Das Diagramm visualisiert den Datenfluss bei der Suche und Filterung von Messungen:
-              Die Benutzereingabe wird in URL-Parameter übersetzt, die von der Server-Komponente 
-              verarbeitet werden. Der Data Access Layer führt die SQL-Abfrage aus, und die 
-              gefilterten Ergebnisse werden dem Benutzer angezeigt.
-            </p>
-          </div>
+            Die Anwendung implementiert ein robustes Authentifizierungssystem basierend auf NextAuth.js, 
+            das den Zugriff auf geschützte Ressourcen kontrolliert und eine sichere Benutzeranmeldung 
+            ermöglicht.
+          </p>
 
-          {/* Search Implementation */}
-          <section id="search-implementation" className="mb-8">
+          {/* NextAuth.js Setup */}
+          <section id="auth-setup" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">5.1 Implementierung der Suchfunktion</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.1 NextAuth.js Konfiguration</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
-            </div>              <p className="mb-4">
-              Die Suchfunktion basiert auf URL-Parametern und Server-Components. Die Suchkomponente 
-              aktualisiert die URL, was eine neue Server-Anfrage auslöst und die gefilterten 
-              Ergebnisse lädt. Um die Server-Last zu minimieren und die Benutzerfreundlichkeit zu erhöhen, 
-              wird die Suchanfrage durch Debouncing verzögert: Erst wenn der Benutzer für 300ms keine 
-              weiteren Eingaben macht, wird die Suche ausgeführt. Dies verhindert unnötige Anfragen 
-              während des Tippens und sorgt für eine flüssigere Benutzeroberfläche.
-            </p>            <div className="bg-gray-50 rounded-lg p-6 mb-4">
-              <h4 className="font-semibold mb-2">SQL-Implementierung:</h4>
-              <p className="mb-2">
-                Die Hauptsuche basiert auf einer optimierten SQL-Abfrage mit mehreren fortgeschrittenen Features:
-              </p>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>
-                  <span className="font-medium">Common Table Expression (CTE)</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Vorberechnung der Kanalanzahl pro Messung durch Gruppierung, reduziert Komplexität der Hauptabfrage
-                  </p>
-                </li>
-                <li>
-                  <span className="font-medium">LEFT JOINs</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Verknüpfung von Messungen (measurements) mit Metadaten und vorberechneten Kanalzählungen
-                  </p>
-                </li>
-                <li>
-                  <span className="font-medium">ILIKE für Volltextsuche</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Case-insensitive Suche in Dateinamen und Beschreibungen mit Platzhaltern (%term%)
-                  </p>
-                </li>
-                <li>
-                  <span className="font-medium">COALESCE für NULL-Handling</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Sichere Behandlung von Messungen ohne Kanäle durch Standardwert 0
-                  </p>
-                </li>
-              </ul>
             </div>
-
-            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/lib/data.ts (Suchabfrage)
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`export async function fetchFilteredMeasurements(query: string, currentPage: number) {
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  try {
-    const measurements = await sql\`
-      WITH ChannelCounts AS (
-        SELECT measurement_id, COUNT(*) as channel_count
-        FROM measurement_channels
-        GROUP BY measurement_id
-      )
-      SELECT 
-        m.id,
-        meta.filename,
-        meta.description,
-        meta.status,
-        m.created_at,
-        COALESCE(cc.channel_count, 0) as channel_count
-      FROM measurements m
-      LEFT JOIN metadata meta ON m.id = meta.measurement_id
-      LEFT JOIN ChannelCounts cc ON m.id = cc.measurement_id
-      WHERE
-        meta.filename ILIKE \${\'%\' + query + \'%\'} OR
-        meta.description ILIKE \${\'%\' + query + \'%\'}
-      ORDER BY m.created_at DESC
-      LIMIT \${ITEMS_PER_PAGE} OFFSET \${offset}
-    \`;
-
-    return measurements;
-  } catch (error) {
-    console.error('Datenbankfehler:', error);
-    throw new Error('Fehler beim Laden der gefilterten Messungen.');
-  }
-}`}</code>
-              </pre>
-            </div>
-          </section>
-
-          {/* Pagination Implementation */}
-          <section id="pagination-implementation" className="mb-8">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">5.2 Paginierung der Ergebnisse</h3>
-              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
-                ↑ Nach oben
-              </Link>
-            </div>            <p className="mb-4">
-              Die Paginierung ist als Client-Komponente implementiert, die nahtlos mit der Server-seitigen 
-              Suchfunktion zusammenarbeitet. Der Zustand der Paginierung wird in den URL-Parametern 
-              gespeichert, wodurch die Navigation durch die Ergebnisse auch bei einem Browser-Refresh 
-              erhalten bleibt.
-            </p>
 
             <p className="mb-4">
-              Die Paginierungskomponente besteht aus drei Hauptteilen:
+              Die Authentifizierung wird durch NextAuth.js bereitgestellt und nutzt einen 
+              Credentials Provider für die Benutzeranmeldung. Die Konfiguration erfolgt in 
+              mehreren zentralen Dateien.
             </p>
 
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li><span className="font-medium">Pagination</span> - Hauptkomponente für die gesamte Seitennavigation</li>
-              <li><span className="font-medium">PaginationNumber</span> - Komponente für die einzelnen Seitenzahlen</li>
-              <li><span className="font-medium">PaginationArrow</span> - Komponente für die Vor/Zurück-Navigation</li>
-            </ul>
+            <h4 className="text-lg font-semibold mt-6 mb-4">Auth Konfiguration</h4>            <p className="mb-4">
+              Die Basis-Konfiguration für NextAuth.js definiert die grundlegenden Authentifizierungseinstellungen, 
+              insbesondere die Zugriffskontrolle für geschützte Routen und die Weiterleitung bei fehlender Berechtigung:
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 auth.config.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Importiere den NextAuth Konfigurationstyp
+import type { NextAuthConfig } from 'next-auth';
 
-            <p className="mb-4">Der relevante Code für die Hauptfunktionalität ist:</p>
+/**
+ * Hauptkonfiguration für NextAuth
+ * Definiert das Authentifizierungsverhalten der Anwendung
+ */
+export const authConfig = {
+  // Konfiguration der Authentifizierungsseiten
+  pages: {
+    signIn: '/login', // Pfad zur Login-Seite
+  },
+  callbacks: {
+    /**
+     * Callback zur Autorisierungsprüfung
+     * Kontrolliert den Zugriff auf geschützte Routen und Weiterleitungen
+     * @param auth - Authentifizierungsstatus des Benutzers
+     * @param nextUrl - Ziel-URL des Requests
+     */
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnDocs = nextUrl.pathname.startsWith('/docs');
 
-            <div className="rounded-lg overflow-hidden">              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/ui/pagination.tsx
-              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`// Markiere dies als Client-Komponente, da sie interaktive Elemente enthält
-'use client';
+      // Erlaube Zugriff auf Dokumentation ohne Login
+      if (isOnDocs) return true;
 
-// Importiere benötigte Komponenten und Module
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';  // Pfeil-Icons für Navigation
-import clsx from 'clsx';                   // Utility für bedingte CSS-Klassen
-import Link from 'next/link';              // Next.js Link-Komponente
-import { generatePagination } from '@/app/lib/utils';  // Hilfsfunktion zur Seitennummerierung
-import { usePathname, useSearchParams } from 'next/navigation';  // Hooks für URL-Parameter
+      // Prüfe Zugriffsberechtigung für Dashboard
+      if (isOnDashboard) {
+        if (isLoggedIn) return true;
+        return false; // Leite nicht authentifizierte Benutzer zur Login-Seite weiter
+      } else if (isLoggedIn && !isOnDocs) {
+        return Response.redirect(new URL('/dashboard', nextUrl));
+      }
+      return true;
+    },
+  },
+  providers: [], // Provider-Array bleibt vorerst leer, wird in auth.ts konfiguriert
+} satisfies NextAuthConfig;`}</code>
+              </pre>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Credentials Provider</h4>
+            <p className="mb-4">
+              Die Implementierung der Benutzerauthentifizierung erfolgt über einen Credentials Provider, 
+              der die Anmeldedaten gegen die PostgreSQL-Datenbank prüft. Die Datei beinhaltet die 
+              Datenbankanbindung, Benutzervalidierung und sichere Passwortüberprüfung mit bcrypt:
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 auth.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Importiere benötigte Abhängigkeiten
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { authConfig } from './auth.config';
+import { z } from 'zod';
+import type { User } from '@/app/lib/definitions';
+import bcrypt from 'bcrypt';
+import postgres from 'postgres';
 
-// Hauptkomponente für die Seitennavigation
-export default function Pagination({ totalPages }: { totalPages: number }) {
-  // Hole aktuelle URL-Informationen
-  const pathname = usePathname();
+// Initialisiere PostgreSQL-Verbindung mit SSL
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+/**
+ * Holt einen Benutzer aus der Datenbank anhand seiner E-Mail-Adresse
+ * @param email - Die E-Mail-Adresse des gesuchten Benutzers
+ * @returns Ein Promise, das den Benutzer oder undefined zurückgibt
+ */
+async function getUser(email: string): Promise<User | undefined> {
+  try {
+    const user = await sql<User[]>\`SELECT * FROM users WHERE email=\${email}\`;
+    return user[0];
+  } catch (error) {
+    console.error('Fehler beim Abrufen des Benutzers:', error);
+    throw new Error('Fehler beim Abrufen des Benutzers.');
+  }
+}
+
+// Exportiere die NextAuth-Konfiguration mit Authentifizierungsfunktionen
+export const { auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  providers: [
+    Credentials({
+      async authorize(credentials) {
+        // Validiere die eingegebene Anmeldedaten mit Zod Schema
+        const parsedCredentials = z
+          .object({ email: z.string().email(), password: z.string().min(6) })
+          .safeParse(credentials);
+
+        if (parsedCredentials.success) {
+          const { email, password } = parsedCredentials.data;
+          // Suche den Benutzer in der Datenbank
+          const user = await getUser(email);
+          if (!user) return null;
+          // Vergleiche das eingegebene Passwort mit dem gespeicherten Hash
+          const passwordsMatch = await bcrypt.compare(password, user.password);
+
+          if (passwordsMatch) return user;
+        }
+
+        console.log('Ungültige Anmeldedaten');
+        return null;
+      },
+    }),
+  ],
+});`}</code>
+              </pre>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Login-Formular Komponente</h4>
+            <p className="mb-4">
+              Das Login-Formular ist eine Client-Komponente, die Server Actions für die Authentifizierung nutzt. 
+              Sie verarbeitet Weiterleitungs-URLs, validiert Benutzereingaben und zeigt Fehlermeldungen an. 
+              Die Komponente verwendet moderne React-Patterns wie useActionState für die Formularverarbeitung 
+              und bietet eine benutzerfreundliche Oberfläche mit Icon-Integration:
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/login-form.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`'use client';
+
+// Importiere benötigte Komponenten und Funktionen
+import { lusitana } from '@/app/ui/fonts';
+import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { Button } from '@/app/ui/button';
+import { useActionState } from 'react';
+import { authenticate } from '@/app/lib/actions';
+import { useSearchParams } from 'next/navigation';
+
+// Login-Formular Komponente für die Benutzerauthentifizierung
+export default function LoginForm() {
+  // Hole URL-Parameter und setze Standard-Weiterleitungs-URL
   const searchParams = useSearchParams();
-  // Ermittle aktuelle Seite aus URL-Parametern (Standard: Seite 1)
-  const currentPage = Number(searchParams.get('page')) || 1;
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  // Verwende useActionState für Formularaktionen und Fehlermeldungen
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined,
+  );
 
-  // Hilfsfunktion zum Erstellen der URLs für Seitenwechsel
-  const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', pageNumber.toString());
-    return \`\${pathname}?\${params.toString()}\`;
-  };
-
-  // Generiere Array mit allen Seitenzahlen und ggf. Auslassungspunkten
-  const allPages = generatePagination(currentPage, totalPages);
   return (
-    <>
-      {/* Container für die Paginierung */}
-      <div className="inline-flex">
-        {/* Pfeil für vorherige Seite */}
-        <PaginationArrow
-          direction="left"
-          href={createPageURL(currentPage - 1)}
-          isDisabled={currentPage <= 1}  // Deaktiviert auf Seite 1
-        />
+    <form action={formAction} className="space-y-3">
+      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+        <h1 className={\`\${lusitana.className} mb-3 text-2xl\`}>
+          Bitte melden Sie sich an, um fortzufahren.
+        </h1>
 
-        <div className="flex -space-x-px">
-          {allPages.map((page, index) => {
-            let position: 'first' | 'last' | 'single' | 'middle' | undefined;
-
-            if (index === 0) position = 'first';
-            if (index === allPages.length - 1) position = 'last';
-            if (allPages.length === 1) position = 'single';
-            if (page === '...') position = 'middle';
-
-            return (
-              <PaginationNumber
-                key={\`\${page}-\${index}\`}
-                href={createPageURL(page)}
-                page={page}
-                position={position}
-                isActive={currentPage === page}
+        {/* Formular-Eingabefelder */}
+        <div className="w-full">
+          <div>
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="email"
+            >
+              E-Mail
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
+                required
               />
-            );
-          })}
+              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="password"
+            >
+              Passwort
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Geben Sie Ihr Passwort ein"
+                required
+                minLength={6}
+              />
+              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
         </div>
+        <Button className="mt-4 w-full" aria-disabled={isPending}>
+          Anmelden <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </Button>
 
-        <PaginationArrow
-          direction="right"
-          href={createPageURL(currentPage + 1)}
-          isDisabled={currentPage >= totalPages}
-        />
+        {/* Fehleranzeige */}
+        <div className="flex h-8 items-end space-x-1">
+          {errorMessage && (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
+        </div>
       </div>
-    </>
+    </form>
   );
 }`}</code>
               </pre>
-            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Paginierungslogik</h4>
-            <p className="mb-4">
-              Die Hilfsfunktion <code>generatePagination</code> aus <code>utils.ts</code> erzeugt ein 
-              intelligentes Layout für die Seitenzahlen. Diese Funktion wird von der Pagination-Komponente 
-              verwendet, um eine intuitive Navigation zu ermöglichen. Je nach Position der aktuellen Seite 
-              wird das Layout dynamisch angepasst:
-            </p>
-
-            <div className="bg-gray-50 rounded-lg p-6 mb-4">
-              <h5 className="font-semibold mb-2">Anpassungsfälle:</h5>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>
-                  <span className="font-medium">Wenige Seiten (≤7)</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Alle Seitenzahlen werden direkt angezeigt, keine Auslassungspunkte nötig
-                  </p>
-                </li>
-                <li>
-                  <span className="font-medium">Nahe am Anfang (≤3)</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Zeigt die ersten drei Seiten, dann Auslassungspunkte und die letzten zwei Seiten
-                  </p>
-                </li>
-                <li>
-                  <span className="font-medium">Nahe am Ende</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Zeigt die ersten zwei, Auslassungspunkte und die letzten drei Seiten
-                  </p>
-                </li>
-                <li>
-                  <span className="font-medium">In der Mitte</span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Zeigt die erste Seite, Auslassungspunkte, die aktuelle Seite mit Nachbarn, weitere Auslassungspunkte und die letzte Seite
-                  </p>
-                </li>
-              </ul>
             </div>
 
-            <div className="rounded-lg overflow-hidden">
-              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/lib/utils.ts
-              </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`// Generiert ein Array von Seitenzahlen für die Paginierung
-export const generatePagination = (currentPage: number, totalPages: number) => {
-  // Falls die Gesamtzahl der Seiten 7 oder weniger beträgt,
-  // zeige alle Seiten ohne Auslassungspunkte an
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
+          </section>
 
-  // Falls die aktuelle Seite unter den ersten 3 Seiten ist,
-  // zeige die ersten 3, Auslassungspunkte und die letzten 2 Seiten
-  if (currentPage <= 3) {
-    return [1, 2, 3, '...', totalPages - 1, totalPages];
-  }
-
-  // Falls die aktuelle Seite unter den letzten 3 Seiten ist,
-  // zeige die ersten 2, Auslassungspunkte und die letzten 3 Seiten
-  if (currentPage >= totalPages - 2) {
-    return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
-  }
-
-  // Falls die aktuelle Seite irgendwo in der Mitte liegt,
-  // zeige die erste Seite, Auslassungspunkte, die aktuelle Seite und ihre Nachbarn,
-  // weitere Auslassungspunkte und die letzte Seite
-  return [
-    1,
-    '...',
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-    '...',
-    totalPages,
-  ];
-};`}</code>
-              </pre>
-            </div>
-          </section>          {/* Integration */}
-          <section id="search-pagination-integration" className="mb-8">
+          {/* Login Components */}
+          <section id="auth-components" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">5.3 Integration und Optimierung</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.2 Login-Komponenten</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
-            </div>            <p className="mb-4">
-              Die Integration von Suche und Paginierung erfolgt in der Messungsübersicht 
-              (<code>app/dashboard/analysis/page.tsx</code>). Diese Server-Komponente implementiert 
-              eine optimierte Datenverarbeitung mit URL-basierten Suchparametern, asynchronem Laden 
-              durch Suspense und einer benutzerfreundlichen Oberfläche mit responsivem Design.
+            </div>
+
+            <p className="mb-4">
+              Die Login-Komponenten bestehen aus einem Login-Formular und einer Server Action für die 
+              Authentifizierung. Das Formular erfasst die Benutzerdaten, während die Server Action die 
+              Authentifizierung verarbeitet und die Benutzeranmeldung steuert.
             </p>
 
+            <h4 className="text-lg font-semibold mt-6 mb-4">Login-Formular</h4>
+            <p className="mb-4">
+              Das Login-Formular ist eine Client-Komponente, die die Benutzereingaben erfasst und an die 
+              Server Action zur Verarbeitung sendet. Es bietet eine benutzerfreundliche Oberfläche mit 
+              integrierter Fehleranzeige.
+            </p>
             <div className="rounded-lg overflow-hidden">
               <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/dashboard/analysis/page.tsx
-              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`// Importiere die benötigten Komponenten und Module
-import Pagination from '@/app/ui/pagination';           // Komponente für die Seitennavigation
-import Search from '@/app/ui/search';                  // Suchleiste
-import Table from '@/app/ui/analysis/table';           // Tabelle für die Messungsliste 
-import { CreateAnalysis } from '@/app/ui/analysis/buttons';  // Button zum Erstellen einer neuen Auswertung
-import { lusitana } from '@/app/ui/fonts';            // Spezielle Schriftart für Überschriften
-import { MeasurementsTableSkeleton } from '@/app/ui/skeletons';  // Lade-Animation für die Tabelle
-import { Suspense } from 'react';                     // React-Komponente für asynchrones Laden
-import { fetchMeasurementsPages } from '@/app/lib/data';  // Funktion zum Abrufen der Seitenanzahl
-import { Metadata } from 'next';                      // Next.js Metadaten-Typ
-
-// Definiere die Metadaten für die Seite (wird im Browser-Tab angezeigt)
-export const metadata: Metadata = {
-  title: 'Messungen',
-};
-
-// Hauptkomponente der Messungsübersicht
-// Props enthalten die URL-Suchparameter für Suche und Paginierung
-export default async function Page(props: {
-    searchParams?: Promise<{
-      query?: string;      // Suchbegriff aus der URL
-      page?: string;       // Aktuelle Seitennummer
-    }>;
-  }) {
-    // Extrahiere und verarbeite die URL-Parameter
-    const searchParams = await props.searchParams;
-    const query = searchParams?.query || '';              // Suchbegriff (leer wenn nicht vorhanden)
-    const currentPage = Number(searchParams?.page) || 1;  // Aktuelle Seite (1 wenn nicht vorhanden)
-    const totalPages = await fetchMeasurementsPages(query);  // Hole Gesamtanzahl der Seiten
-   
-    return (
-      <div className="w-full">
-        {/* Kopfbereich mit Titel */}
-        <div className="flex w-full items-center justify-between">
-          <h1 className={\`\${lusitana.className} text-2xl\`}>Messungen</h1>
-        </div>
-        {/* Suchleiste und Button für neue Auswertung */}
-        <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-          <Search placeholder="Messungen durchsuchen..." />
-          <CreateAnalysis />
-        </div>
-        {/* Tabelle mit Messungen, eingepackt in Suspense für asynchrones Laden */}
-        <Suspense key={query + currentPage} fallback={<MeasurementsTableSkeleton />}>
-          <Table query={query} currentPage={currentPage} />
-        </Suspense>
-        {/* Seitennavigation */}
-        <div className="mt-5 flex w-full justify-center">
-          <Pagination totalPages={totalPages} />
-        </div>
-      </div>
-    );
-  }`}</code>
-              </pre>            </div>
-          </section>
-
-          <div className="mt-8 mb-4">
-            <h4 className="text-lg font-semibold mb-4">Fertige Implementierung</h4>
-            <p className="mb-4">
-              Die folgende Abbildung zeigt die fertige Implementierung der Analyseseite mit allen 
-              integrierten Komponenten: der Suchleiste, der Messungstabelle mit Statusanzeigen und 
-              der Paginierung am unteren Rand:
-            </p>            <div className="mt-4 mb-8">
-              <div className="flex justify-center">
-                <Image 
-                  src="/docs/analysis.png"
-                  alt="Screenshot der Analyseseite mit Suchfunktion, Messungstabelle und Paginierung"
-                  width={1000}
-                  height={800}
-                  className="rounded-lg border border-gray-200 shadow-md"
-                />
+                📄 app/ui/login-form.tsx
               </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`'use client';
+
+// Importiere benötigte Komponenten und Funktionen
+import { lusitana } from '@/app/ui/fonts';
+import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { Button } from '@/app/ui/button';
+import { useActionState } from 'react';
+import { authenticate } from '@/app/lib/actions';
+import { useSearchParams } from 'next/navigation';
+
+// Login-Formular Komponente für die Benutzerauthentifizierung
+export default function LoginForm() {
+  // Hole URL-Parameter und setze Standard-Weiterleitungs-URL
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  // Verwende useActionState für Formularaktionen und Fehlermeldungen
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined,
+  );
+
+  return (
+    <form action={formAction} className="space-y-3">
+      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+        <h1 className={\`\${lusitana.className} mb-3 text-2xl\`}>
+          Bitte melden Sie sich an, um fortzufahren.
+        </h1>
+
+        {/* Formular-Eingabefelder */}
+        <div className="w-full">
+          <div>
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="email"
+            >
+              E-Mail
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Geben Sie Ihre E-Mail-Adresse ein"
+                required
+              />
+              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
+          <div className="mt-4">
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="password"
+            >
+              Passwort
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Geben Sie Ihr Passwort ein"
+                required
+                minLength={6}
+              />
+              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+        </div>
+        <Button className="mt-4 w-full" aria-disabled={isPending}>
+          Anmelden <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </Button>
+
+        {/* Fehleranzeige */}
+        <div className="flex h-8 items-end space-x-1">
+          {errorMessage && (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
+        </div>
+      </div>
+    </form>
+  );
+}`}</code>
+              </pre>
+            </div>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Server Action: authenticate</h4>
+            <p className="mb-4">
+              Die Server Action <code className="text-sm bg-gray-100 px-1">authenticate</code> verarbeitet 
+              die Anmeldedaten, prüft die Benutzeranmeldung und verwaltet die Sitzung. Sie wird vom Login-Formular 
+              aufgerufen und steuert den Authentifizierungsworkflow.
+            </p>
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/lib/actions.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">
+{`'use server';
+
+import { authConfig } from './auth.config';
+import { sql } from './db';
+import { revalidatePath } from 'next/cache';
+import bcrypt from 'bcrypt';
+
+// Authentifiziert einen Benutzer mit E-Mail und Passwort
+export async function authenticate(formData: FormData) {
+  'use server';
+
+  // Extrahiere E-Mail und Passwort aus den Formulardaten
+  const email = formData.get('email')?.toString();
+  const password = formData.get('password')?.toString();
+
+  if (!email || !password) {
+    return {
+      success: false,
+      error: 'Bitte füllen Sie alle Felder aus.',
+    };
+  }
+
+  try {
+    // Suche den Benutzer in der Datenbank
+    const user = await sql\`SELECT * FROM users WHERE email = \${email}\`;
+
+    if (user.length === 0) {
+      return {
+        success: false,
+        error: 'Benutzer nicht gefunden.',
+      };
+    }
+
+    // Vergleiche das eingegebene Passwort mit dem gespeicherten Hash
+    const isPasswordValid = await bcrypt.compare(password, user[0].password);
+
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        error: 'Ungültiges Passwort.',
+      };
+    }
+
+    // Authentifizierung erfolgreich, setze die Sitzung
+    const { password: _, ...userData } = user[0]; // Entferne das Passwortfeld
+    revalidatePath('/dashboard'); // Cache für die Dashboard-Seite ungültig machen
+
+    return {
+      success: true,
+      redirect: '/dashboard',
+      user: userData,
+    };
+  } catch (error) {
+    console.error('Fehler bei der Authentifizierung:', error);
+    return {
+      success: false,
+      error: 'Fehler bei der Authentifizierung. Bitte versuchen Sie es später erneut.',
+    };
+  }
+}`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Protected Routes */}
+          <section id="auth-protection" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.3 Geschützte Routen</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Der Zugriff auf geschützte Bereiche wird durch den Next.js Middleware-Mechanismus 
+              kontrolliert. Dies ermöglicht eine zentrale Zugriffskontrolle für alle 
+              geschützten Routen.
+            </p>
+
+            <h4 className="text-lg font-semibold mt-6 mb-4">Middleware für Routenschutz</h4>            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 middleware.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`/**
+ * Middleware für die Authentifizierung und Zugriffskontrolle
+ * 
+ * Diese Middleware wird bei jedem Request ausgeführt und prüft, ob der Benutzer
+ * berechtigt ist, auf die angeforderte Route zuzugreifen. Sie nutzt NextAuth.js
+ * für das Session-Management und die Authentifizierung.
+ */
+import NextAuth from 'next-auth';
+import { authConfig } from './auth.config';
+
+// Exportiere die Authentifizierungs-Middleware von NextAuth.js
+export default NextAuth(authConfig).auth;
+
+export const config = {
+  /**
+   * Matcher-Konfiguration definiert, für welche Routen die Middleware aktiv ist
+   * 
+   * Ausgeschlossen sind:
+   * - /api Routes (API-Endpoints)
+   * - /_next/static (statische Dateien)
+   * - /_next/image (optimierte Bilder)
+   * - *.png Dateien (Bilder)
+   * 
+   * Alle anderen Routen werden durch die Authentifizierung geschützt
+   */
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+};`}</code></pre>
+            </div>            <div className="bg-gray-50 rounded-lg p-6 mt-6">
+              <h4 className="font-semibold mb-2">Authentifizierungs-Workflow:</h4>
+              <ol className="list-decimal pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Request-Validierung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Eingehende Anfragen werden durch die Middleware überprüft. Statische Ressourcen 
+                    (Bilder, API-Routes) sind von der Authentifizierung ausgenommen, während alle anderen 
+                    Routen geschützt sind.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Session-Überprüfung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    NextAuth.js prüft das Session-Cookie und validiert den JWT-Token. Bei gültiger 
+                    Session wird der Benutzer-Kontext für die Anwendung bereitgestellt.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Autorisierung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Der authorized-Callback in auth.config.ts prüft die Zugriffsrechte basierend auf 
+                    der Route. Das Dashboard erfordert eine aktive Session, während die Dokumentation 
+                    öffentlich zugänglich ist.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Weiterleitung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Bei fehlendem Zugriff erfolgt eine automatische Weiterleitung zur Login-Seite, 
+                    wobei die ursprüngliche URL als callbackUrl gespeichert wird. Nach erfolgreicher 
+                    Anmeldung kehrt der Benutzer zur gewünschten Seite zurück.
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Fehlerbehandlung</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Ungültige Anmeldeversuche werden protokolliert, und dem Benutzer werden 
+                    aussagekräftige Fehlermeldungen angezeigt. Die Passwortvalidierung erfolgt 
+                    sicher über bcrypt.
+                  </p>
+                </li>
+              </ol>
+            </div>
+
+          </section>
         </div>
       </section>
     </main>
