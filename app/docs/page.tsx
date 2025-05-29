@@ -1185,13 +1185,34 @@ export const config = {
               <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
                 📄 app/ui/dashboard/timeseries-chart.tsx
               </div>
-              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
-                <code className="language-typescript">{`import { fetchTimeseriesData } from '@/app/lib/data';
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm"><code className="language-typescript">{`import { fetchTimeseriesData } from '@/app/lib/data';
 import TimeseriesChartClient from './timeseries-chart-client';
+import { type TimeseriesDataPoint } from '@/app/lib/definitions';
 
 export default async function TimeseriesChart() {
-  const data = await fetchTimeseriesData();
-  return <TimeseriesChartClient data={data} />;
+  const rawData = await fetchTimeseriesData();
+  
+  // Transformiere die Daten in das erwartete Format
+  const transformedData: TimeseriesDataPoint[] = [];
+  
+  for (const measurement of rawData) {
+    for (const point of measurement.data) {
+      const dataPoint: TimeseriesDataPoint = {
+        seconds: point.seconds_from_start
+      };
+      
+      // Füge alle Kanalwerte hinzu
+      for (const channel of measurement.channels) {
+        if (typeof point[channel] === 'number') {
+          dataPoint[channel] = point[channel];
+        }
+      }
+      
+      transformedData.push(dataPoint);
+    }
+  }
+
+  return <TimeseriesChartClient data={transformedData} />;
 }`}</code>
               </pre>
             </div>
