@@ -730,7 +730,7 @@ export const { auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        // Validiere die eingegebenen Anmeldedaten mit Zod Schema
+        // Validiere die eingegebene Anmeldedaten mit Zod Schema
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(6) })
           .safeParse(credentials);
@@ -1400,16 +1400,16 @@ export default function EditAnalysisForm({
             <p className="mt-8 mb-4">
               Die folgende Abbildung zeigt die fertige Integration des Tremor-Liniendiagramms in der 
               Bearbeitungsansicht, zusammen mit den Formularfeldern für Metadaten und Validierungsstatus:
-            </p>
-
-            <div className="mt-4 mb-8">
-              <Image 
-                src="/docs/edit.png"
-                alt="Screenshot der Bearbeitungsansicht mit integriertem Liniendiagramm"
-                width={1000}
-                height={800}
-                className="rounded-lg border border-gray-200"
-              />
+            </p>            <div className="mt-4 mb-8">
+              <div className="flex justify-center">
+                <Image 
+                  src="/docs/edit.png"
+                  alt="Screenshot der Bearbeitungsansicht mit integriertem Liniendiagramm"
+                  width={1000}
+                  height={800}
+                  className="rounded-lg border border-gray-200"
+                />
+              </div>
             </div>
           </section>
         </div>
@@ -1429,7 +1429,25 @@ export default function EditAnalysisForm({
             Performance und Skalierbarkeit. Die Funktionalität ist in der Analyseseite integriert und 
             nutzt den <Link href="#nextjs-api" className="text-blue-600 hover:underline">Data Access Layer</Link> für 
             effiziente Datenbankabfragen.
-          </p>
+          </p>          {/* Datenflussdiagramm */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-semibold mb-4 text-center">Datenflussdiagramm: Such- und Filterprozess</h3>
+            <div className="flex justify-center">
+              <Image 
+                src="/docs/search-flow.png"
+                alt="Datenflussdiagramm des Such- und Filterprozesses"
+                width={800}
+                height={400}
+                className="rounded-lg border border-gray-200 shadow-md"
+              />
+            </div>
+            <p className="mt-4 text-sm text-gray-600">
+              Das Diagramm visualisiert den Datenfluss bei der Suche und Filterung von Messungen:
+              Die Benutzereingabe wird in URL-Parameter übersetzt, die von der Server-Komponente 
+              verarbeitet werden. Der Data Access Layer führt die SQL-Abfrage aus, und die 
+              gefilterten Ergebnisse werden dem Benutzer angezeigt.
+            </p>
+          </div>
 
           {/* Search Implementation */}
           <section id="search-implementation" className="mb-8">
@@ -1587,51 +1605,34 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
           isDisabled={currentPage <= 1}  // Deaktiviert auf Seite 1
         />
 
-  // URL-Generator für Seitenwechsel
-  const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', pageNumber.toString());
-    return \`\${pathname}?\${params.toString()}\`;
-  };
+        <div className="flex -space-x-px">
+          {allPages.map((page, index) => {
+            let position: 'first' | 'last' | 'single' | 'middle' | undefined;
 
-  // Generiere Array mit Seitenzahlen und Auslassungspunkten
-  const allPages = generatePagination(currentPage, totalPages);
+            if (index === 0) position = 'first';
+            if (index === allPages.length - 1) position = 'last';
+            if (allPages.length === 1) position = 'single';
+            if (page === '...') position = 'middle';
 
-  return (
-    <div className="inline-flex">
-      <PaginationArrow
-        direction="left"
-        href={createPageURL(currentPage - 1)}
-        isDisabled={currentPage <= 1}
-      />
+            return (
+              <PaginationNumber
+                key={\`\${page}-\${index}\`}
+                href={createPageURL(page)}
+                page={page}
+                position={position}
+                isActive={currentPage === page}
+              />
+            );
+          })}
+        </div>
 
-      <div className="flex -space-x-px">
-        {allPages.map((page, index) => {
-          let position: 'first' | 'last' | 'single' | 'middle' | undefined;
-
-          if (index === 0) position = 'first';
-          if (index === allPages.length - 1) position = 'last';
-          if (allPages.length === 1) position = 'single';
-          if (page === '...') position = 'middle';
-
-          return (
-            <PaginationNumber
-              key={\`\${page}-\${index}\`}
-              href={createPageURL(page)}
-              page={page}
-              position={position}
-              isActive={currentPage === page}
-            />
-          );
-        })}
+        <PaginationArrow
+          direction="right"
+          href={createPageURL(currentPage + 1)}
+          isDisabled={currentPage >= totalPages}
+        />
       </div>
-
-      <PaginationArrow
-        direction="right"
-        href={createPageURL(currentPage + 1)}
-        isDisabled={currentPage >= totalPages}
-      />
-    </div>
+    </>
   );
 }`}</code>
               </pre>
@@ -1661,7 +1662,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
                 <li>
                   <span className="font-medium">Nahe am Ende</span>
                   <p className="text-sm text-gray-600 mt-1">
-                    Zeigt die ersten zwei Seiten, Auslassungspunkte und die letzten drei Seiten
+                    Zeigt die ersten zwei, Auslassungspunkte und die letzten drei Seiten
                   </p>
                 </li>
                 <li>
@@ -1792,15 +1793,16 @@ export default async function Page(props: {
               Die folgende Abbildung zeigt die fertige Implementierung der Analyseseite mit allen 
               integrierten Komponenten: der Suchleiste, der Messungstabelle mit Statusanzeigen und 
               der Paginierung am unteren Rand:
-            </p>
-            <div className="mt-4 mb-8">
-              <Image 
-                src="/docs/analysis.png"
-                alt="Screenshot der Analyseseite mit Suchfunktion, Messungstabelle und Paginierung"
-                width={1000}
-                height={800}
-                className="rounded-lg border border-gray-200 shadow-md"
-              />
+            </p>            <div className="mt-4 mb-8">
+              <div className="flex justify-center">
+                <Image 
+                  src="/docs/analysis.png"
+                  alt="Screenshot der Analyseseite mit Suchfunktion, Messungstabelle und Paginierung"
+                  width={1000}
+                  height={800}
+                  className="rounded-lg border border-gray-200 shadow-md"
+                />
+              </div>
             </div>
           </div>
         </div>
