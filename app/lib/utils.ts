@@ -1,12 +1,15 @@
-import { Revenue } from './definitions';
+// Hilfsfunktionen für verschiedene Formatierungen und Berechnungen
+import { TimeseriesDataPoint } from './definitions';
 
+// Formatiert einen Betrag als Währung
 export const formatCurrency = (amount: number) => {
-  return (amount / 100).toLocaleString('en-US', {
+  return (amount / 100).toLocaleString('de-DE', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'EUR',
   });
 };
 
+// Formatiert ein Datum in lokales Format
 export const formatDateToLocal = (
   date: string | Date,
   locale: string = 'de-DE',
@@ -21,11 +24,17 @@ export const formatDateToLocal = (
   return formatter.format(dateObj);
 };
 
-export const generateYAxis = (revenue: Revenue[]) => {
-  // Calculate what labels we need to display on the y-axis
-  // based on highest record and in 1000s
+// Generiert Beschriftungen für die Y-Achse des Diagramms
+export const generateYAxis = (data: TimeseriesDataPoint[]) => {
+  // Berechne die benötigten Beschriftungen für die Y-Achse
+  // basierend auf dem höchsten Wert, dargestellt in Tausenderschritten
   const yAxisLabels = [];
-  const highestRecord = Math.max(...revenue.map((month) => month.revenue));
+  // Finde den höchsten Wert über alle numerischen Eigenschaften
+  const highestRecord = Math.max(...data.flatMap(point => 
+    Object.entries(point)
+      .filter(([key, value]) => key !== 'seconds' && typeof value === 'number')
+      .map(([_, value]) => value as number)
+  ));
   const topLabel = Math.ceil(highestRecord / 1000) * 1000;
 
   for (let i = topLabel; i >= 0; i -= 1000) {
@@ -35,28 +44,29 @@ export const generateYAxis = (revenue: Revenue[]) => {
   return { yAxisLabels, topLabel };
 };
 
+// Generiert ein Array von Seitenzahlen für die Paginierung
 export const generatePagination = (currentPage: number, totalPages: number) => {
-  // If the total number of pages is 7 or less,
-  // display all pages without any ellipsis.
+  // Falls die Gesamtzahl der Seiten 7 oder weniger beträgt,
+  // zeige alle Seiten ohne Auslassungspunkte an
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  // If the current page is among the first 3 pages,
-  // show the first 3, an ellipsis, and the last 2 pages.
+  // Falls die aktuelle Seite unter den ersten 3 Seiten ist,
+  // zeige die ersten 3, Auslassungspunkte und die letzten 2 Seiten
   if (currentPage <= 3) {
     return [1, 2, 3, '...', totalPages - 1, totalPages];
   }
 
-  // If the current page is among the last 3 pages,
-  // show the first 2, an ellipsis, and the last 3 pages.
+  // Falls die aktuelle Seite unter den letzten 3 Seiten ist,
+  // zeige die ersten 2, Auslassungspunkte und die letzten 3 Seiten
   if (currentPage >= totalPages - 2) {
     return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
   }
 
-  // If the current page is somewhere in the middle,
-  // show the first page, an ellipsis, the current page and its neighbors,
-  // another ellipsis, and the last page.
+  // Falls die aktuelle Seite irgendwo in der Mitte liegt,
+  // zeige die erste Seite, Auslassungspunkte, die aktuelle Seite und ihre Nachbarn,
+  // weitere Auslassungspunkte und die letzte Seite
   return [
     1,
     '...',

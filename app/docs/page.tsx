@@ -3,11 +3,40 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
+// Komponente für Anforderungspunkte
+function RequirementItem({ 
+  text, 
+  implemented, 
+  details 
+}: { 
+  text: string; 
+  implemented: boolean; 
+  details?: string | React.ReactNode; 
+}) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className={`mt-1 flex-shrink-0 ${implemented ? 'text-green-600' : 'text-gray-400'}`}>
+        {implemented ? '✓' : '○'}
+      </span>
+      <div>
+        <span>{text}</span>
+        {details && (
+          <span className="block text-sm text-gray-600 mt-1">
+            → {details}
+          </span>
+        )}
+      </div>
+    </li>
+  );
+}
+
 export default function DocsPage() {
   return (
     <main className="min-h-screen p-6 md:p-12 max-w-7xl mx-auto">
+      {/* Title */}
       <h1 className="text-3xl font-bold mb-8">Projektdokumentation</h1>
-        {/* Inhaltsverzeichnis */}
+
+      {/* Table of Contents */}
       <div className="mb-12 p-6 bg-gray-50 rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Inhaltsverzeichnis</h2>
         <nav className="space-y-2">          <Link href="#aufgabenstellung" className="block hover:text-blue-600">
@@ -52,9 +81,24 @@ export default function DocsPage() {
               4.2 Datenintegration und Optimierung
             </Link>
           </div>
+          <Link href="#filtering-pagination" className="block hover:text-blue-600">
+            5. Filterung und Paginierung
+          </Link>
+          <div className="pl-4 space-y-1">
+            <Link href="#search-implementation" className="block hover:text-blue-600 text-sm">
+              5.1 Implementierung der Suchfunktion
+            </Link>
+            <Link href="#pagination-implementation" className="block hover:text-blue-600 text-sm">
+              5.2 Paginierung der Ergebnisse
+            </Link>
+            <Link href="#search-pagination-integration" className="block hover:text-blue-600 text-sm">
+              5.3 Integration und Optimierung
+            </Link>
+          </div>
         </nav>
       </div>
 
+      {/* Sections */}
       {/* Aufgabenstellung */}
       <section id="aufgabenstellung" className="mb-12">
         <div className="flex justify-between items-center">
@@ -1103,8 +1147,7 @@ export const config = {
         </div>
       </section>
 
-      {/* Data Visualization */}
-      <section id="data-visualization" className="mt-12 mb-12">
+      {/* Data Visualization */}      <section id="data-visualization" className="mt-12 mb-12">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold mb-6">4. Datenvisualisierung mit Tremor</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
@@ -1119,8 +1162,7 @@ export const config = {
             Server- und Client-Komponenten auf.
           </p>
 
-          {/* Architecture Section */}
-          <section id="tremor-architecture" className="mb-8">
+          <div id="tremor-architecture" className="mb-8">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold mt-8 mb-4">4.1 Server- und Client-Komponenten</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
@@ -1202,7 +1244,7 @@ export default function TimeseriesChartClient({ data }: { data: TimeseriesDataPo
 }`}</code>
               </pre>
             </div>
-          </section>
+          </div>
 
           {/* Data Integration */}
           <section id="data-flow" className="mb-8">
@@ -1211,7 +1253,8 @@ export default function TimeseriesChartClient({ data }: { data: TimeseriesDataPo
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
-            </div>            <p className="mb-4">
+            </div>            
+            <p className="mb-4">
               Die Integration der Messdaten in die Visualisierung erfolgt über den <Link href="#nextjs-api" className="text-blue-600 hover:underline">Data Access Layer</Link>, 
               der die Daten direkt aus der PostgreSQL-Datenbank lädt und in Kapitel 2.1 detailliert beschrieben ist. Die Datenstruktur 
               ist auf effiziente Verarbeitung und Darstellung ausgelegt.
@@ -1350,33 +1393,397 @@ export default function EditAnalysisForm({
           </section>
         </div>
       </section>
-    </main>
-  );
-}
+          {/* Filtering and Pagination */}
+          <section id="filtering-pagination" className="mt-12 mb-12">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold mb-6">5. Filterung und Paginierung</h2>
+          <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+            ↑ Nach oben
+          </Link>
+        </div>
 
-// Komponente für Anforderungspunkte
-function RequirementItem({ 
-  text, 
-  implemented, 
-  details 
-}: { 
-  text: string; 
-  implemented: boolean; 
-  details?: string | React.ReactNode; 
-}) {
+        <div className="prose max-w-none">
+          <p className="mb-6 text-lg">
+            Die Implementierung der Datenfilterung und Paginierung erfolgt serverseitig für optimale 
+            Performance und Skalierbarkeit. Die Funktionalität ist in der Analyseseite integriert und 
+            nutzt den <Link href="#nextjs-api" className="text-blue-600 hover:underline">Data Access Layer</Link> für 
+            effiziente Datenbankabfragen.
+          </p>
+
+          {/* Search Implementation */}
+          <section id="search-implementation" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.1 Implementierung der Suchfunktion</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>              <p className="mb-4">
+              Die Suchfunktion basiert auf URL-Parametern und Server-Components. Die Suchkomponente 
+              aktualisiert die URL, was eine neue Server-Anfrage auslöst und die gefilterten 
+              Ergebnisse lädt. Um die Server-Last zu minimieren und die Benutzerfreundlichkeit zu erhöhen, 
+              wird die Suchanfrage durch Debouncing verzögert: Erst wenn der Benutzer für 300ms keine 
+              weiteren Eingaben macht, wird die Suche ausgeführt. Dies verhindert unnötige Anfragen 
+              während des Tippens und sorgt für eine flüssigere Benutzeroberfläche.
+            </p>            <div className="bg-gray-50 rounded-lg p-6 mb-4">
+              <h4 className="font-semibold mb-2">SQL-Implementierung:</h4>
+              <p className="mb-2">
+                Die Hauptsuche basiert auf einer optimierten SQL-Abfrage mit mehreren fortgeschrittenen Features:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Common Table Expression (CTE)</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Vorberechnung der Kanalanzahl pro Messung durch Gruppierung, reduziert Komplexität der Hauptabfrage
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">LEFT JOINs</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Verknüpfung von Messungen (measurements) mit Metadaten und vorberechneten Kanalzählungen
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">ILIKE für Volltextsuche</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Case-insensitive Suche in Dateinamen und Beschreibungen mit Platzhaltern (%term%)
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">COALESCE für NULL-Handling</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Sichere Behandlung von Messungen ohne Kanäle durch Standardwert 0
+                  </p>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/lib/data.ts (Suchabfrage)
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`export async function fetchFilteredMeasurements(query: string, currentPage: number) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const measurements = await sql\`
+      WITH ChannelCounts AS (
+        SELECT measurement_id, COUNT(*) as channel_count
+        FROM measurement_channels
+        GROUP BY measurement_id
+      )
+      SELECT 
+        m.id,
+        meta.filename,
+        meta.description,
+        meta.status,
+        m.created_at,
+        COALESCE(cc.channel_count, 0) as channel_count
+      FROM measurements m
+      LEFT JOIN metadata meta ON m.id = meta.measurement_id
+      LEFT JOIN ChannelCounts cc ON m.id = cc.measurement_id
+      WHERE
+        meta.filename ILIKE \${\'%\' + query + \'%\'} OR
+        meta.description ILIKE \${\'%\' + query + \'%\'}
+      ORDER BY m.created_at DESC
+      LIMIT \${ITEMS_PER_PAGE} OFFSET \${offset}
+    \`;
+
+    return measurements;
+  } catch (error) {
+    console.error('Datenbankfehler:', error);
+    throw new Error('Fehler beim Laden der gefilterten Messungen.');
+  }
+}`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Pagination Implementation */}
+          <section id="pagination-implementation" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.2 Paginierung der Ergebnisse</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>            <p className="mb-4">
+              Die Paginierung ist als Client-Komponente implementiert, die nahtlos mit der Server-seitigen 
+              Suchfunktion zusammenarbeitet. Der Zustand der Paginierung wird in den URL-Parametern 
+              gespeichert, wodurch die Navigation durch die Ergebnisse auch bei einem Browser-Refresh 
+              erhalten bleibt.
+            </p>
+
+            <p className="mb-4">
+              Die Paginierungskomponente besteht aus drei Hauptteilen:
+            </p>
+
+            <ul className="list-disc pl-6 mb-4 space-y-2">
+              <li><span className="font-medium">Pagination</span> - Hauptkomponente für die gesamte Seitennavigation</li>
+              <li><span className="font-medium">PaginationNumber</span> - Komponente für die einzelnen Seitenzahlen</li>
+              <li><span className="font-medium">PaginationArrow</span> - Komponente für die Vor/Zurück-Navigation</li>
+            </ul>
+
+            <p className="mb-4">Der relevante Code für die Hauptfunktionalität ist:</p>
+
+            <div className="rounded-lg overflow-hidden">              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/pagination.tsx
+              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Markiere dies als Client-Komponente, da sie interaktive Elemente enthält
+'use client';
+
+// Importiere benötigte Komponenten und Module
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';  // Pfeil-Icons für Navigation
+import clsx from 'clsx';                   // Utility für bedingte CSS-Klassen
+import Link from 'next/link';              // Next.js Link-Komponente
+import { generatePagination } from '@/app/lib/utils';  // Hilfsfunktion zur Seitennummerierung
+import { usePathname, useSearchParams } from 'next/navigation';  // Hooks für URL-Parameter
+
+// Hauptkomponente für die Seitennavigation
+export default function Pagination({ totalPages }: { totalPages: number }) {
+  // Hole aktuelle URL-Informationen
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  // Ermittle aktuelle Seite aus URL-Parametern (Standard: Seite 1)
+  const currentPage = Number(searchParams.get('page')) || 1;
+
+  // Hilfsfunktion zum Erstellen der URLs für Seitenwechsel
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return \`\${pathname}?\${params.toString()}\`;
+  };
+
+  // Generiere Array mit allen Seitenzahlen und ggf. Auslassungspunkten
+  const allPages = generatePagination(currentPage, totalPages);
   return (
-    <li className="flex items-start gap-3">
-      <span className={`mt-1 flex-shrink-0 ${implemented ? 'text-green-600' : 'text-gray-400'}`}>
-        {implemented ? '✓' : '○'}
-      </span>
-      <div>
-        <span>{text}</span>
-        {details && (
-          <span className="block text-sm text-gray-600 mt-1">
-            → {details}
-          </span>
-        )}
+    <>
+      {/* Container für die Paginierung */}
+      <div className="inline-flex">
+        {/* Pfeil für vorherige Seite */}
+        <PaginationArrow
+          direction="left"
+          href={createPageURL(currentPage - 1)}
+          isDisabled={currentPage <= 1}  // Deaktiviert auf Seite 1
+        />
+
+  // URL-Generator für Seitenwechsel
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return \`\${pathname}?\${params.toString()}\`;
+  };
+
+  // Generiere Array mit Seitenzahlen und Auslassungspunkten
+  const allPages = generatePagination(currentPage, totalPages);
+
+  return (
+    <div className="inline-flex">
+      <PaginationArrow
+        direction="left"
+        href={createPageURL(currentPage - 1)}
+        isDisabled={currentPage <= 1}
+      />
+
+      <div className="flex -space-x-px">
+        {allPages.map((page, index) => {
+          let position: 'first' | 'last' | 'single' | 'middle' | undefined;
+
+          if (index === 0) position = 'first';
+          if (index === allPages.length - 1) position = 'last';
+          if (allPages.length === 1) position = 'single';
+          if (page === '...') position = 'middle';
+
+          return (
+            <PaginationNumber
+              key={\`\${page}-\${index}\`}
+              href={createPageURL(page)}
+              page={page}
+              position={position}
+              isActive={currentPage === page}
+            />
+          );
+        })}
       </div>
-    </li>
+
+      <PaginationArrow
+        direction="right"
+        href={createPageURL(currentPage + 1)}
+        isDisabled={currentPage >= totalPages}
+      />
+    </div>
+  );
+}`}</code>
+              </pre>
+            </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Paginierungslogik</h4>
+            <p className="mb-4">
+              Die Hilfsfunktion <code>generatePagination</code> aus <code>utils.ts</code> erzeugt ein 
+              intelligentes Layout für die Seitenzahlen. Diese Funktion wird von der Pagination-Komponente 
+              verwendet, um eine intuitive Navigation zu ermöglichen. Je nach Position der aktuellen Seite 
+              wird das Layout dynamisch angepasst:
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-4">
+              <h5 className="font-semibold mb-2">Anpassungsfälle:</h5>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Wenige Seiten (≤7)</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Alle Seitenzahlen werden direkt angezeigt, keine Auslassungspunkte nötig
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Nahe am Anfang (≤3)</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Zeigt die ersten drei Seiten, dann Auslassungspunkte und die letzten zwei Seiten
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">Nahe am Ende</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Zeigt die ersten zwei Seiten, Auslassungspunkte und die letzten drei Seiten
+                  </p>
+                </li>
+                <li>
+                  <span className="font-medium">In der Mitte</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Zeigt die erste Seite, Auslassungspunkte, die aktuelle Seite mit Nachbarn, weitere Auslassungspunkte und die letzte Seite
+                  </p>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/lib/utils.ts
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Generiert ein Array von Seitenzahlen für die Paginierung
+export const generatePagination = (currentPage: number, totalPages: number) => {
+  // Falls die Gesamtzahl der Seiten 7 oder weniger beträgt,
+  // zeige alle Seiten ohne Auslassungspunkte an
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  // Falls die aktuelle Seite unter den ersten 3 Seiten ist,
+  // zeige die ersten 3, Auslassungspunkte und die letzten 2 Seiten
+  if (currentPage <= 3) {
+    return [1, 2, 3, '...', totalPages - 1, totalPages];
+  }
+
+  // Falls die aktuelle Seite unter den letzten 3 Seiten ist,
+  // zeige die ersten 2, Auslassungspunkte und die letzten 3 Seiten
+  if (currentPage >= totalPages - 2) {
+    return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  // Falls die aktuelle Seite irgendwo in der Mitte liegt,
+  // zeige die erste Seite, Auslassungspunkte, die aktuelle Seite und ihre Nachbarn,
+  // weitere Auslassungspunkte und die letzte Seite
+  return [
+    1,
+    '...',
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    '...',
+    totalPages,
+  ];
+};`}</code>
+              </pre>
+            </div>
+          </section>          {/* Integration */}
+          <section id="search-pagination-integration" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.3 Integration und Optimierung</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>            <p className="mb-4">
+              Die Integration von Suche und Paginierung erfolgt in der Messungsübersicht 
+              (<code>app/dashboard/analysis/page.tsx</code>). Diese Server-Komponente implementiert 
+              eine optimierte Datenverarbeitung mit URL-basierten Suchparametern, asynchronem Laden 
+              durch Suspense und einer benutzerfreundlichen Oberfläche mit responsivem Design.
+            </p>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/dashboard/analysis/page.tsx
+              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-typescript">{`// Importiere die benötigten Komponenten und Module
+import Pagination from '@/app/ui/pagination';           // Komponente für die Seitennavigation
+import Search from '@/app/ui/search';                  // Suchleiste
+import Table from '@/app/ui/analysis/table';           // Tabelle für die Messungsliste 
+import { CreateAnalysis } from '@/app/ui/analysis/buttons';  // Button zum Erstellen einer neuen Auswertung
+import { lusitana } from '@/app/ui/fonts';            // Spezielle Schriftart für Überschriften
+import { MeasurementsTableSkeleton } from '@/app/ui/skeletons';  // Lade-Animation für die Tabelle
+import { Suspense } from 'react';                     // React-Komponente für asynchrones Laden
+import { fetchMeasurementsPages } from '@/app/lib/data';  // Funktion zum Abrufen der Seitenanzahl
+import { Metadata } from 'next';                      // Next.js Metadaten-Typ
+
+// Definiere die Metadaten für die Seite (wird im Browser-Tab angezeigt)
+export const metadata: Metadata = {
+  title: 'Messungen',
+};
+
+// Hauptkomponente der Messungsübersicht
+// Props enthalten die URL-Suchparameter für Suche und Paginierung
+export default async function Page(props: {
+    searchParams?: Promise<{
+      query?: string;      // Suchbegriff aus der URL
+      page?: string;       // Aktuelle Seitennummer
+    }>;
+  }) {
+    // Extrahiere und verarbeite die URL-Parameter
+    const searchParams = await props.searchParams;
+    const query = searchParams?.query || '';              // Suchbegriff (leer wenn nicht vorhanden)
+    const currentPage = Number(searchParams?.page) || 1;  // Aktuelle Seite (1 wenn nicht vorhanden)
+    const totalPages = await fetchMeasurementsPages(query);  // Hole Gesamtanzahl der Seiten
+   
+    return (
+      <div className="w-full">
+        {/* Kopfbereich mit Titel */}
+        <div className="flex w-full items-center justify-between">
+          <h1 className={\`\${lusitana.className} text-2xl\`}>Messungen</h1>
+        </div>
+        {/* Suchleiste und Button für neue Auswertung */}
+        <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+          <Search placeholder="Messungen durchsuchen..." />
+          <CreateAnalysis />
+        </div>
+        {/* Tabelle mit Messungen, eingepackt in Suspense für asynchrones Laden */}
+        <Suspense key={query + currentPage} fallback={<MeasurementsTableSkeleton />}>
+          <Table query={query} currentPage={currentPage} />
+        </Suspense>
+        {/* Seitennavigation */}
+        <div className="mt-5 flex w-full justify-center">
+          <Pagination totalPages={totalPages} />
+        </div>
+      </div>
+    );
+  }`}</code>
+              </pre>            </div>
+          </section>
+
+          <div className="mt-8 mb-4">
+            <h4 className="text-lg font-semibold mb-4">Fertige Implementierung</h4>
+            <p className="mb-4">
+              Die folgende Abbildung zeigt die fertige Implementierung der Analyseseite mit allen 
+              integrierten Komponenten: der Suchleiste, der Messungstabelle mit Statusanzeigen und 
+              der Paginierung am unteren Rand:
+            </p>
+            <div className="mt-4 mb-8">
+              <Image 
+                src="/docs/analysis.png"
+                alt="Screenshot der Analyseseite mit Suchfunktion, Messungstabelle und Paginierung"
+                width={1000}
+                height={800}
+                className="rounded-lg border border-gray-200 shadow-md"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
