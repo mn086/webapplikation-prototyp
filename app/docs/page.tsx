@@ -430,6 +430,7 @@ export default function NavLinks() {
 │   ├── timeseries-chart.tsx
 │   └── timeseries-chart-client.tsx
 ├── button.tsx        # Wiederverwendbare UI-Elemente
+├── code-block.tsx    # Syntax-Highlighting für Code
 ├── login-form.tsx    # Authentifizierung
 ├── pagination.tsx    # Seitennavigation
 ├── search.tsx        # Suchfunktion
