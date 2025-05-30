@@ -77,42 +77,42 @@ export default function DocsPage() {
             </Link>
           </div>
           <Link href="#filtering-pagination" className="block hover:text-blue-600">
-            3. Filterung und Paginierung
+            4. Filterung und Paginierung
           </Link>
           <div className="pl-4 space-y-1">
             <Link href="#search-implementation" className="block hover:text-blue-600 text-sm">
-              3.1 Implementierung der Suchfunktion
+              4.1 Implementierung der Suchfunktion
             </Link>
             <Link href="#pagination-implementation" className="block hover:text-blue-600 text-sm">
-              3.2 Paginierung der Ergebnisse
+              4.2 Paginierung der Ergebnisse
             </Link>
             <Link href="#search-pagination-integration" className="block hover:text-blue-600 text-sm">
-              3.3 Integration und Optimierung
+              4.3 Integration und Optimierung
             </Link>
           </div>
           <Link href="#data-visualization" className="block hover:text-blue-600">
-            4. Datenvisualisierung mit Tremor
+            5. Datenvisualisierung mit Tremor
           </Link>
           <div className="pl-4 space-y-1">
             <Link href="#tremor-architecture" className="block hover:text-blue-600 text-sm">
-              4.1 Server- und Client-Komponenten
+              5.2 Server- und Client-Komponenten
             </Link>
             <Link href="#data-flow" className="block hover:text-blue-600 text-sm">
-              4.2 Datenintegration und Optimierung
+              5.2 Datenintegration und Optimierung
             </Link>
           </div>
           <Link href="#auth" className="block hover:text-blue-600">
-            5. Authentifizierung und Zugriffskontrolle
+            6. Authentifizierung und Zugriffskontrolle
           </Link>
           <div className="pl-4 space-y-1">
             <Link href="#auth-setup" className="block hover:text-blue-600 text-sm">
-              5.1 NextAuth.js Konfiguration
+              6.1 NextAuth.js Konfiguration
             </Link>
             <Link href="#auth-components" className="block hover:text-blue-600 text-sm">
-              5.2 Login-Komponenten
+              6.2 Login-Komponenten
             </Link>
             <Link href="#auth-protection" className="block hover:text-blue-600 text-sm">
-              5.3 Geschützte Routen
+              6.3 Geschützte Routen
             </Link>
           </div>
         </nav>
@@ -219,7 +219,7 @@ export default function DocsPage() {
             </div>
 
             <p className="mb-4">
-              Das Basis-Layout in <code>app/layout.tsx</code> bildet das Fundament der Anwendung:
+              Das Basis-Layout in <code className="text-sm bg-gray-100 px-1">app/layout.tsx</code> bildet das Fundament der Anwendung:
             </p>
 
             <ul className="list-disc pl-6 mb-4 space-y-2">
@@ -239,7 +239,7 @@ export default function DocsPage() {
             </div>
 
             <p className="mb-4">
-              Das Dashboard-Layout (<code>app/dashboard/layout.tsx</code>) implementiert ein responsives zweispaltiges Design:
+              Das Dashboard-Layout (<code className="text-sm bg-gray-100 px-1">app/dashboard/layout.tsx</code>) implementiert ein responsives zweispaltiges Design:
             </p>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
@@ -253,7 +253,7 @@ export default function DocsPage() {
 
             <div className="rounded-lg overflow-hidden">
               <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
-                📄 app/dashboard/layout.tsx (Beispiel)
+                📄 <code className="text-sm bg-gray-100 px-1">app/dashboard/layout.tsx</code> (Beispiel)
               </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
                 <code className="language-tsx">{`// Container mit flexiblem Layout, das sich an die Bildschirmgröße anpasst
 // - Auf Mobilgeräten: vertikale Anordnung (flex-col)
@@ -284,7 +284,7 @@ export default function DocsPage() {
                 ↑ Nach oben
               </Link>
             </div>            <p className="mb-4">
-              Die Navigation (<code>app/ui/dashboard/nav-links.tsx</code>) ist als Client-Komponente für interaktive Navigation implementiert:
+              Die Navigation (<code className="text-sm bg-gray-100 px-1">app/ui/dashboard/nav-links.tsx</code>) ist als Client-Komponente für interaktive Navigation implementiert:
             </p>
 
             <ul className="list-disc pl-6 mb-4 space-y-2">
@@ -491,25 +491,24 @@ export default function NavLinks() {
                 <li>
                   <span className="font-medium">Konsistente Breakpoints:</span>
                   <ul className="pl-6 mt-2 space-y-1">
-                    <li><code>sm:</code> - Tablets (640px+)</li>
-                    <li><code>md:</code> - Desktop (768px+)</li>
-                    <li><code>lg:</code> - Große Displays (1024px+)</li>
+                    <li><code className="text-sm bg-gray-100 px-1">sm:</code> - Tablets (640px+)</li>
+                    <li><code className="text-sm bg-gray-100 px-1">md:</code> - Desktop (768px+)</li>
+                    <li><code className="text-sm bg-gray-100 px-1">lg:</code> - Große Displays (1024px+)</li>
                   </ul>
                 </li>
                 <li>
                   <span className="font-medium">Spacing System:</span>
-                  <ul className="pl-6 mt-2 space-y-1">
-                    <li>Container-Padding: <code>p-6 md:p-12</code></li>
-                    <li>Grid Gaps: <code>gap-4</code> bis <code>gap-6</code></li>
-                    <li>Stack Spacing: <code>space-y-2</code> für vertikale, <code>space-x-2</code> für horizontale Abstände</li>
+                  <ul className="pl-6 mt-2 space-y-1">                <li>Container-Padding: <code className="text-sm bg-gray-100 px-1">p-6 md:p-12</code></li>
+                    <li>Grid Gaps: <code className="text-sm bg-gray-100 px-1">gap-4</code> bis <code className="text-sm bg-gray-100 px-1">gap-6</code></li>
+                    <li>Stack Spacing: <code className="text-sm bg-gray-100 px-1">space-y-2</code> für vertikale, <code className="text-sm bg-gray-100 px-1">space-x-2</code> für horizontale Abstände</li>
                   </ul>
                 </li>
                 <li>
                   <span className="font-medium">HdM Designsystem:</span>
                   <ul className="pl-6 mt-2 space-y-1">
-                    <li>HdM-Rot: <code>bg-[#e2001a]</code></li>
-                    <li>Dunkelgrau: <code>bg-[#3E4847]</code></li>
-                    <li>Hover-States: <code>hover:bg-[#4a5553]</code></li>
+                    <li>HdM-Rot: <code className="text-sm bg-gray-100 px-1">bg-[#e2001a]</code></li>
+                    <li>Dunkelgrau: <code className="text-sm bg-gray-100 px-1">bg-[#3E4847]</code></li>
+                    <li>Hover-States: <code className="text-sm bg-gray-100 px-1">hover:bg-[#4a5553]</code></li>
                   </ul>
                 </li>
               </ul>
@@ -951,7 +950,7 @@ export async function importMeasurement(id: string) {
           {/* Filtering and Pagination */}
           <section id="filtering-pagination" className="mt-12 mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">3. Filterung und Paginierung</h2>
+          <h2 className="text-2xl font-bold mb-6">4. Filterung und Paginierung</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -986,7 +985,7 @@ export async function importMeasurement(id: string) {
           {/* Search Implementation */}
           <section id="search-implementation" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">3.1 Implementierung der Suchfunktion</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">4.1 Implementierung der Suchfunktion</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -1075,7 +1074,7 @@ export async function importMeasurement(id: string) {
           {/* Pagination Implementation */}
           <section id="pagination-implementation" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">3.2 Paginierung der Ergebnisse</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">4.2 Paginierung der Ergebnisse</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -1172,7 +1171,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
               </pre>
             </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Paginierungslogik</h4>
             <p className="mb-4">
-              Die Hilfsfunktion <code>generatePagination</code> aus <code>utils.ts</code> erzeugt ein 
+              Die Hilfsfunktion <code className="text-sm bg-gray-100 px-1">generatePagination</code> aus <code className="text-sm bg-gray-100 px-1">utils.ts</code> erzeugt ein 
               intelligentes Layout für die Seitenzahlen. Diese Funktion wird von der Pagination-Komponente 
               verwendet, um eine intuitive Navigation zu ermöglichen. Je nach Position der aktuellen Seite 
               wird das Layout dynamisch angepasst:
@@ -1251,13 +1250,13 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
           </section>          {/* Integration */}
           <section id="search-pagination-integration" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">3.3 Integration und Optimierung</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">4.3 Integration und Optimierung</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
             </div>            <p className="mb-4">
               Die Integration von Suche und Paginierung erfolgt in der Messungsübersicht 
-              (<code>app/dashboard/analysis/page.tsx</code>). Diese Server-Komponente implementiert 
+              (<code className="text-sm bg-gray-100 px-1">app/dashboard/analysis/page.tsx</code>). Diese Server-Komponente implementiert 
               eine optimierte Datenverarbeitung mit URL-basierten Suchparametern, asynchronem Laden 
               durch Suspense und einer benutzerfreundlichen Oberfläche mit responsivem Design.
             </p>
@@ -1344,7 +1343,7 @@ export default async function Page(props: {
 
       {/* Data Visualization */}      <section id="data-visualization" className="mt-12 mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">4. Datenvisualisierung mit Tremor</h2>
+          <h2 className="text-2xl font-bold mb-6">5. Datenvisualisierung mit Tremor</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -1359,7 +1358,7 @@ export default async function Page(props: {
 
           <div id="tremor-architecture" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">4.1 Server- und Client-Komponenten</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.2 Server- und Client-Komponenten</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -1465,7 +1464,7 @@ export default function TimeseriesChartClient({ data }: { data: TimeseriesDataPo
           {/* Data Integration */}
           <section id="data-flow" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">4.2 Datenintegration und Optimierung</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">5.2 Datenintegration und Optimierung</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -1613,7 +1612,7 @@ export default function EditAnalysisForm({
             {/* Authentication */}
       <section id="auth" className="mt-12 mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">5. Authentifizierung und Zugriffskontrolle</h2>
+          <h2 className="text-2xl font-bold mb-6">6. Authentifizierung und Zugriffskontrolle</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -1629,7 +1628,7 @@ export default function EditAnalysisForm({
           {/* NextAuth.js Setup */}
           <section id="auth-setup" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">5.1 NextAuth.js Konfiguration</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">6.1 NextAuth.js Konfiguration</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -1865,7 +1864,7 @@ export default function LoginForm() {
           {/* Login Components */}
           <section id="auth-components" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">5.2 Login-Komponenten</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">6.2 Login-Komponenten</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -2058,7 +2057,7 @@ export async function authenticate(formData: FormData) {
           {/* Protected Routes */}
           <section id="auth-protection" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">5.3 Geschützte Routen</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">6.3 Geschützte Routen</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
