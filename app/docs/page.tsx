@@ -468,10 +468,12 @@ export default function NavLinks() {
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
               <h4 className="font-semibold mb-2">1. Hauptlayout-Pattern (Dashboard):</h4>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>
+              <ul className="list-disc pl-6 space-y-2">                <li>
                   <span className="font-medium">Responsives zweispaltiges Layout:</span>
-                  <pre className="bg-gray-800 text-gray-100 p-2 rounded mt-2">{`<div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
+                  <div className="mt-2">
+                    <CodeBlock
+                      language="tsx"
+                      code={`<div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
   {/* Navigation: Mobile = volle Breite, Desktop = 16rem */}
   <div className="w-full flex-none md:w-64">
     <SideNav />
@@ -480,32 +482,43 @@ export default function NavLinks() {
   <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
     {children}
   </div>
-</div>`}</pre>
+</div>`}
+                    />
+                  </div>
                 </li>
               </ul>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
               <h4 className="font-semibold mb-2">2. Navigation & Komponenten:</h4>
-              <ul className="list-disc pl-6 space-y-4">
-                <li>
+              <ul className="list-disc pl-6 space-y-4">                <li>
                   <span className="font-medium">SideNav-Layout:</span>
-                  <pre className="bg-gray-800 text-gray-100 p-2 rounded mt-2">{`<div className="flex h-full flex-col px-3 py-4 md:px-2">
+                  <div className="mt-2">
+                    <CodeBlock
+                      language="tsx"
+                      code={`<div className="flex h-full flex-col px-3 py-4 md:px-2">
   {/* Logo-Bereich mit HdM Branding */}
   <Link className="mb-2 flex h-20 items-end justify-start 
                   rounded-md bg-[#3E4847] p-4 md:h-40">
   {/* Navigation mit responsivem Verhalten */}
   <div className="flex grow flex-row justify-between 
                   space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-    <NavLinks />`}</pre>
+    <NavLinks />`}
+                    />
+                  </div>
                 </li>
                 <li>
                   <span className="font-medium">Cards Grid-Layout:</span>
-                  <pre className="bg-gray-800 text-gray-100 p-2 rounded mt-2">{`<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="mt-2">
+                    <CodeBlock
+                      language="tsx"
+                      code={`<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
   <Card>
     {/* Card-Inhalt */}
   </Card>
-</div>`}</pre>
+</div>`}
+                    />
+                  </div>
                 </li>
               </ul>
             </div>
