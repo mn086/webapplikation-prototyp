@@ -411,9 +411,8 @@ export default function NavLinks() {
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h4 className="font-semibold mb-2">Komponenten-Organisation:</h4>
-              <pre className="text-sm">{`/app/ui/
-├── analysis/           # Messungs-bezogene Komponenten
+              <h4 className="font-semibold mb-2">Komponenten-Organisation:</h4>              <pre className="text-sm">{`/app/ui/
+├── analysis/           # Analyse-Komponenten
 │   ├── breadcrumbs.tsx
 │   ├── buttons.tsx
 │   ├── create-form.tsx
@@ -429,13 +428,18 @@ export default function NavLinks() {
 │   ├── sidenav.tsx
 │   ├── timeseries-chart.tsx
 │   └── timeseries-chart-client.tsx
+├── measurements/      # Messungs-Komponenten
+│   ├── status.tsx
+│   └── table.tsx
 ├── button.tsx        # Wiederverwendbare UI-Elemente
 ├── code-block.tsx    # Syntax-Highlighting für Code
+├── fonts.ts          # Schriftarten-Konfiguration
+├── global.css        # Globale Styles
+├── home.module.css   # Home-spezifische Styles
 ├── login-form.tsx    # Authentifizierung
 ├── pagination.tsx    # Seitennavigation
 ├── search.tsx        # Suchfunktion
-├── skeletons.tsx     # Lade-Platzhalter
-└── global.css        # Globale Styles`}</pre>
+└── skeletons.tsx     # Lade-Platzhalter`}</pre>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">

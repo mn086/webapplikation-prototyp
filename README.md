@@ -12,16 +12,21 @@ Diese Anwendung ist ein Dashboard zur Visualisierung von Zeitreihendaten, das mi
 ## Projektstruktur
 
 ```
-app/
-├── api/                     # Setup & Debug API-Routes
-│   ├── check-status/       # [Diag] Statusabfrage der Datenbank
-│   ├── check-tables/       # [Diag] Überprüfung der Datenbankstruktur
-│   ├── check-values/       # [Diag] Überprüfung der Messwerte
-│   ├── create-indices/     # [Setup] Einmalige Indexerstellung
-│   ├── init/              # [Setup] Initiale Datenbankinitialisierung
-│   ├── seed/              # [Optional] Initiales Einfügen von Testdaten
-│   ├── test-data/         # [Debug] Testdatenabfrage
-│   └── test-update/       # [Debug] Update-Tests
+├── app/                    # Next.js App Router basierte Anwendung
+│   ├── favicon.ico        # Favicon
+│   ├── layout.tsx         # Root Layout
+│   ├── page.tsx          # Homepage
+│   ├── opengraph-image.png # Social Media Preview
+│   ├── api/              # Setup & Debug API-Routes
+│   │   ├── check-status/ # [Diag] Statusabfrage der Datenbank
+│   │   ├── check-tables/ # [Diag] Überprüfung der Datenbankstruktur
+│   │   ├── check-values/ # [Diag] Überprüfung der Messwerte
+│   │   ├── create-indices/ # [Setup] Einmalige Indexerstellung
+│   │   ├── init/        # [Setup] Initiale Datenbankinitialisierung
+│   │   ├── seed/        # [Optional] Initiales Einfügen von Testdaten
+│   │   ├── test-data/   # [Debug] Testdatenabfrage
+│   │   ├── test-db/     # [Debug] Datenbankverbindungstest
+│   │   └── test-update/ # [Debug] Update-Tests
 ├── dashboard/              # Dashboard-Bereich
 │   ├── layout.tsx        # Gemeinsames Layout für Dashboard
 │   ├── (overview)/       # Übersichts-Route
@@ -43,23 +48,79 @@ app/
 │   ├── definitions.ts    # Typdefinitionen
 │   ├── php-api.ts        # PHP-API Integration
 │   ├── schema.sql        # Datenbankschema
-│   └── seed.sql          # Testdaten
+│   ├── seed.sql          # Testdaten
+│   └── utils.ts          # Utility-Funktionen
 ├── login/                 # Login-Bereich
+│   └── page.tsx          # Login-Seite
+├── types/                # TypeScript Typdefinitionen
+│   └── svg.d.ts         # SVG Modul-Deklarationen
 └── ui/                    # UI-Komponenten
     ├── analysis/         # Analyse-Komponenten
+    │   ├── breadcrumbs.tsx
+    │   ├── buttons.tsx
+    │   ├── create-form.tsx
+    │   ├── edit-form.tsx
+    │   ├── status.tsx
+    │   └── table.tsx
     ├── branding/         # Branding-Elemente
+    │   └── hdm-logo.tsx
     ├── dashboard/        # Dashboard-Komponenten
-    └── measurements/     # Messungs-Komponenten
+    │   ├── cards.tsx
+    │   ├── latest-measurements.tsx
+    │   ├── nav-links.tsx
+    │   ├── sidenav.tsx
+    │   ├── timeseries-chart.tsx
+    │   └── timeseries-chart-client.tsx
+    ├── measurements/     # Messungs-Komponenten
+    │   ├── status.tsx
+    │   └── table.tsx
+    ├── button.tsx       # Wiederverwendbare UI-Elemente
+    ├── code-block.tsx   # Syntax-Highlighting für Code
+    ├── fonts.ts         # Schriftarten-Konfiguration
+    ├── global.css       # Globale Styles
+    ├── home.module.css  # Home-spezifische Styles
+    ├── login-form.tsx   # Authentifizierung
+    ├── pagination.tsx   # Seitennavigation
+    ├── search.tsx       # Suchfunktion
+    └── skeletons.tsx    # Lade-Platzhalter
 
 apache-php-measurements/   # Apache PHP Backend
 ├── docker-compose.yml    # Docker-Konfiguration
 ├── Dockerfile           # Apache/PHP Docker-Image
 └── measurements-api/    # PHP REST-API
     ├── measurements/   # Messdaten (JSON)
+    │   ├── measurement_001.json
+    │   ├── measurement_002.json
+    │   └── measurement_003.json
     └── api/           # PHP-Endpunkte
         ├── count.php  # Anzahl der Messungen
         ├── get.php    # Einzelne Messung abrufen
         └── list.php   # Liste aller Messungen
+
+public/                 # Statische Assets
+├── hero-desktop.png   # Hero-Bild Desktop
+├── hero-mobile.png    # Hero-Bild Mobile
+├── branding/          # Branding Assets
+│   └── hochschule-der-medien-hdm-vector-logo.svg
+└── docs/             # Dokumentations-Assets
+    ├── analysis.png
+    ├── edit.png
+    └── search-flow.png
+
+
+
+# Konfigurationsdateien
+auth.config.ts        # NextAuth Konfiguration
+auth.ts              # Auth Setup
+middleware.ts        # Next.js Middleware
+next-env.d.ts        # Next.js Typdefinitionen
+next.config.ts       # Next.js Konfiguration
+package.json         # Projekt-Konfiguration
+pnpm-lock.yaml       # PNPM Lockfile
+pnpm-workspace.yaml  # PNPM Workspace
+postcss.config.js    # PostCSS Konfiguration
+tailwind.config.ts   # Tailwind Konfiguration
+tsconfig.json        # TypeScript Konfiguration
 ```
 
 ## Installation und Start
