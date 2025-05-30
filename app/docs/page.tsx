@@ -42,18 +42,38 @@ export default function DocsPage() {
         <nav className="space-y-2">          <Link href="#aufgabenstellung" className="block hover:text-blue-600">
             1. Aufgabenstellung und Umsetzung
           </Link>
+          <Link href="#dashboard" className="block hover:text-blue-600">
+            2. Dashboard-Struktur und Layout
+          </Link>
+          <div className="pl-4 space-y-1">
+            <Link href="#base-layout" className="block hover:text-blue-600 text-sm">
+              2.1 Basis-Layout
+            </Link>
+            <Link href="#dashboard-layout" className="block hover:text-blue-600 text-sm">
+              2.2 Dashboard-Layout
+            </Link>
+            <Link href="#navigation" className="block hover:text-blue-600 text-sm">
+              2.3 Navigation
+            </Link>
+            <Link href="#structure" className="block hover:text-blue-600 text-sm">
+              2.4 Struktur und Organisation
+            </Link>
+            <Link href="#tailwind" className="block hover:text-blue-600 text-sm">
+              2.5 Tailwind CSS Implementierung
+            </Link>
+          </div>
           <Link href="#json-endpoints" className="block hover:text-blue-600">
-            2. Datenbankanbindung und Datenverarbeitung
+            3. Datenbankanbindung und Datenverarbeitung
           </Link>
           <div className="pl-4 space-y-1">
             <Link href="#nextjs-api" className="block hover:text-blue-600 text-sm">
-              2.1 Datenbankanbindung und Data Access Layer
+              3.1 Datenbankanbindung und Data Access Layer
             </Link>
             <Link href="#php-api" className="block hover:text-blue-600 text-sm">
-              2.2 Externe PHP-API
+              3.2 Externe PHP-API
             </Link>
             <Link href="#architecture" className="block hover:text-blue-600 text-sm">
-              2.3 Gesamtarchitektur und Integration
+              3.3 Gesamtarchitektur und Integration
             </Link>
           </div>
           <Link href="#filtering-pagination" className="block hover:text-blue-600">
@@ -123,7 +143,7 @@ export default function DocsPage() {
             <RequirementItem 
               text="Nutzung von Pages Router oder App Router in Next.js (präferiert wird App Router)"
               implemented={true}
-              details="App Router implementiert"            />            <RequirementItem 
+              details={<Link href="#base-layout" className="text-blue-600 hover:underline">App Router implementiert</Link>}            />            <RequirementItem 
               text="Abruf der Daten vom Web-Service-Endpoint im JSON-Format"
               implemented={true}
               details={<>Sowohl <Link href="#json-endpoints" className="text-blue-600 hover:underline">Next.js API Routes</Link> als auch <Link href="#php-api" className="text-blue-600 hover:underline">externe PHP-API</Link></>}
@@ -136,21 +156,19 @@ export default function DocsPage() {
             <RequirementItem 
               text="Möglichkeit der Selektion/Filterung von Daten auf Client- bzw. Server-Seite"
               implemented={true}
-              details="Server-side Filtering & Pagination"
+              details={<Link href="#filtering-pagination" className="text-blue-600 hover:underline">Server-seitige Filterung & Paginierung</Link>}
             />
           </ul>
 
           <h3 className="text-xl font-semibold mt-8 mb-4">Anforderungen an den Web-Service-Endpoint</h3>
           <ul className="space-y-3">
-            <RequirementItem 
-              text="Realisierung des Endpoints mit Next.js oder anderen Technologien"
+            <RequirementItem              text="Realisierung des Endpoints mit Next.js oder anderen Technologien"
               implemented={true}
-              details="Next.js API Routes & PHP-Backend"
-            />
-            <RequirementItem 
+              details={<>Sowohl <Link href="#nextjs-api" className="text-blue-600 hover:underline">Next.js API Routes</Link> als auch <Link href="#php-api" className="text-blue-600 hover:underline">PHP-Backend</Link></>}
+            />            <RequirementItem 
               text="Zugriff auf eine Datenbank (relational oder nicht-relational)"
               implemented={true}
-              details="PostgreSQL via Neon.tech"
+              details={<Link href="#nextjs-api" className="text-blue-600 hover:underline">PostgreSQL via Neon.tech</Link>}
             />
             <RequirementItem 
               text="Aufbereitung und Lieferung der Daten im JSON-Format"
@@ -159,30 +177,351 @@ export default function DocsPage() {
           </ul>
 
           <h3 className="text-xl font-semibold mt-8 mb-4">Optionale Features</h3>
-          <ul className="space-y-3">
-            <RequirementItem 
+          <ul className="space-y-3">            <RequirementItem 
               text="Aufwendiges Frontend mit verschiedenen Optionen für den Nutzer"
               implemented={true}
-              details="Dashboard, Analysewerkzeuge, Responsive Design"
-            />
-            <RequirementItem 
+              details={<>Siehe <Link href="#dashboard-layout" className="text-blue-600 hover:underline">Dashboard-Layout</Link> und <Link href="#tailwind" className="text-blue-600 hover:underline">Responsive Design</Link></>}
+            /><RequirementItem 
               text="Speicherung von ausgesuchten Informationen durch den Benutzer"
               implemented={true}
-              details="Messdaten-Validierung & Metadaten"
-            />
-            <RequirementItem 
+              details={<Link href="#data-flow" className="text-blue-600 hover:underline">Messdaten-Validierung & Metadaten</Link>}
+            /><RequirementItem 
               text="Implementierung eines Logins und einer Authentifizierung"
               implemented={true}
-              details="NextAuth.js mit Credentials Provider"
+              details={<Link href="#auth" className="text-blue-600 hover:underline">NextAuth.js mit Credentials Provider</Link>}
             />
           </ul>
+        </div>
+      </section>
+
+      {/* Dashboard Structure */}
+      <section id="dashboard" className="mb-12">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold mb-6">2. Dashboard-Struktur und Layout</h2>
+          <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+            ↑ Nach oben
+          </Link>
+        </div>
+
+        <div className="prose max-w-none">
+          <p className="mb-6 text-lg">
+            Das Dashboard basiert auf einer klaren Komponentenhierarchie unter Verwendung des Next.js App Routers.
+            Die Architektur folgt modernen Best Practices für Responsive Design und Komponenten-Organisation.
+          </p>
+
+          {/* Base Layout */}
+          <section id="base-layout" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.1 Basis-Layout</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Das Basis-Layout in <code>app/layout.tsx</code> bildet das Fundament der Anwendung:
+            </p>
+
+            <ul className="list-disc pl-6 mb-4 space-y-2">
+              <li>Enthält das grundlegende HTML-Setup</li>
+              <li>Importiert globale Styles und Schriftarten</li>
+              <li>Definiert das Root-Layout für die gesamte Anwendung</li>
+            </ul>
+          </section>
+
+          {/* Dashboard Layout */}
+          <section id="dashboard-layout" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.2 Dashboard-Layout</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Das Dashboard-Layout (<code>app/dashboard/layout.tsx</code>) implementiert ein responsives zweispaltiges Design:
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">Hauptkomponenten:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Linke Spalte: Navigation (Desktop-Ansicht)</li>
+                <li>Obere Leiste: Navigation (Mobile-Ansicht)</li>
+                <li>Rechte Spalte: Hauptinhalt</li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/dashboard/layout.tsx (Beispiel)
+              </div>              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-tsx">{`// Container mit flexiblem Layout, das sich an die Bildschirmgröße anpasst
+// - Auf Mobilgeräten: vertikale Anordnung (flex-col)
+// - Auf Desktop: horizontale Anordnung (md:flex-row)
+<div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
+  {/* Navigation */}
+  {/* - Auf Mobilgeräten: volle Breite */}
+  {/* - Auf Desktop: feste Breite von 64 (16rem) */}
+  <div className="w-full flex-none md:w-64">
+    <SideNav />
+  </div>
+  
+  {/* Hauptinhalt */}
+  {/* - Füllt den verfügbaren Platz (flex-grow) */}
+  {/* - Scrollbar bei Überlauf auf Desktop (md:overflow-y-auto) */}
+  {/* - Innenabstand: 1.5rem (p-6) auf Mobilgeräten, 3rem (p-12) auf Desktop */}
+  <div className="flex-grow p-6 md:overflow-y-auto md:p-12">{children}</div>
+</div>`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Navigation */}
+          <section id="navigation" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.3 Navigation</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>            <p className="mb-4">
+              Die Navigation (<code>app/ui/dashboard/nav-links.tsx</code>) ist als Client-Komponente für interaktive Navigation implementiert:
+            </p>
+
+            <ul className="list-disc pl-6 mb-4 space-y-2">
+              <li>Verwendet Next.js Link für Client-side Navigation</li>
+              <li>Implementiert responsives Design mit Tailwind CSS</li>
+              <li>Unterstützt verschiedene Viewport-Größen mit angepasstem Layout</li>
+              <li>Automatische Hervorhebung des aktiven Links</li>
+              <li>Icons für visuelle Orientierung</li>
+              <li>HdM-Farbschema mit dunklem Hintergrund und roter Akzentuierung</li>
+            </ul>
+
+            <div className="rounded-lg overflow-hidden">
+              <div className="bg-gray-700 text-gray-200 px-4 py-2 text-sm font-mono">
+                📄 app/ui/dashboard/nav-links.tsx
+              </div>
+              <pre className="bg-gray-800 text-gray-100 p-4 text-sm">
+                <code className="language-tsx">{`// Markiert dies als Client-Komponente für interaktive Navigation
+'use client';
+
+// Liste der Navigationslinks für die Seitenleiste
+const links = [
+  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+  {
+    name: 'Messungen',
+    href: '/dashboard/analysis',
+    icon: DocumentDuplicateIcon,
+  },
+  {
+    name: 'Dokumentation',
+    href: '/docs',
+    icon: BookOpenIcon,
+  },
+];
+
+// Hauptkomponente für die Navigation
+export default function NavLinks() {
+  // Hook für den aktuellen Pfad zur Hervorhebung des aktiven Links
+  const pathname = usePathname();
+
+  return (
+    <>
+      {/* Rendere jeden Navigationslink */}
+      {links.map((link) => {
+        const LinkIcon = link.icon;
+        return (
+          <Link
+            key={link.name}
+            href={link.href}
+            className={clsx(
+              // Basis-Styling für alle Links
+              'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-[#3E4847] p-3 text-sm font-medium text-white hover:bg-[#4a5553] md:flex-none md:justify-start md:p-2 md:px-3',
+              {
+                // Zusätzliches Styling für den aktiven Link - HdM Rot für aktive Items
+                'bg-[#e2001a] text-white': pathname === link.href,
+              },
+            )}
+          >
+            {/* Icon des Links */}
+            <LinkIcon className="w-6" />
+            {/* Text des Links (ausgeblendet auf mobilen Geräten) */}
+            <p className="hidden md:block">{link.name}</p>
+          </Link>
+        );
+      })}
+    </>
+  );
+}`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Structure and Organization */}
+          <section id="structure" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.4 Struktur und Organisation</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>            <p className="mb-4">
+              Die Anwendung folgt einer klaren Ordnerstruktur für optimale Wartbarkeit und Skalierbarkeit:
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">Seitenstruktur:</h4>
+              <pre className="text-sm">{`/app/
+├── dashboard/           # Dashboard-Bereich
+│   ├── layout.tsx      # Dashboard-spezifisches Layout
+│   ├── (overview)/     # Dashboard-Übersicht (gruppiert)
+│   │   ├── loading.tsx # Lade-Animation
+│   │   └── page.tsx    # Hauptseite
+│   └── analysis/       # Messungen-Bereich
+│       ├── error.tsx   # Fehlerbehandlung
+│       ├── page.tsx    # Übersichtsseite
+│       ├── [id]/       # Dynamische Routen für Messungen
+│       │   └── edit/   # Bearbeitungsansicht
+│       └── create/     # Neue Messung erstellen
+├── docs/               # Dokumentationsbereich
+├── login/             # Authentifizierung
+└── api/               # API-Endpoints`}</pre>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">Komponenten-Organisation:</h4>
+              <pre className="text-sm">{`/app/ui/
+├── analysis/           # Messungs-bezogene Komponenten
+│   ├── breadcrumbs.tsx
+│   ├── buttons.tsx
+│   ├── create-form.tsx
+│   ├── edit-form.tsx
+│   ├── status.tsx
+│   └── table.tsx
+├── branding/          # Markenelemente
+│   └── hdm-logo.tsx
+├── dashboard/         # Dashboard-Komponenten
+│   ├── cards.tsx
+│   ├── latest-measurements.tsx
+│   ├── nav-links.tsx
+│   ├── sidenav.tsx
+│   ├── timeseries-chart.tsx
+│   └── timeseries-chart-client.tsx
+├── button.tsx        # Wiederverwendbare UI-Elemente
+├── login-form.tsx    # Authentifizierung
+├── pagination.tsx    # Seitennavigation
+├── search.tsx        # Suchfunktion
+├── skeletons.tsx     # Lade-Platzhalter
+└── global.css        # Globale Styles`}</pre>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">Bibliotheken und Hilfsfunktionen:</h4>
+              <pre className="text-sm">{`/app/lib/
+├── actions.ts      # Server Actions für Formulare
+├── data.ts        # Data Access Layer
+├── db.ts          # Datenbankverbindung
+├── definitions.ts # TypeScript Interfaces
+├── php-api.ts     # Externe API Integration
+├── schema.sql     # Datenbankschema
+├── seed.sql       # Testdaten
+└── utils.ts       # Hilfsfunktionen`}</pre>
+            </div>
+          </section>
+
+          {/* Tailwind Implementation */}
+          <section id="tailwind" className="mb-8">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold mt-8 mb-4">2.5 Tailwind CSS Implementierung</h3>
+              <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
+                ↑ Nach oben
+              </Link>
+            </div>
+
+            <p className="mb-4">
+              Die Anwendung implementiert ein durchdachtes Layout-System basierend auf Tailwind CSS.
+              Besonders bei der Umsetzung des responsiven Designs wurden etablierte Muster konsequent angewendet:
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">1. Hauptlayout-Pattern (Dashboard):</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Responsives zweispaltiges Layout:</span>
+                  <pre className="bg-gray-800 text-gray-100 p-2 rounded mt-2">{`<div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
+  {/* Navigation: Mobile = volle Breite, Desktop = 16rem */}
+  <div className="w-full flex-none md:w-64">
+    <SideNav />
+  </div>
+  {/* Content: Scrollbar auf Desktop */}
+  <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
+    {children}
+  </div>
+</div>`}</pre>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h4 className="font-semibold mb-2">2. Navigation & Komponenten:</h4>
+              <ul className="list-disc pl-6 space-y-4">
+                <li>
+                  <span className="font-medium">SideNav-Layout:</span>
+                  <pre className="bg-gray-800 text-gray-100 p-2 rounded mt-2">{`<div className="flex h-full flex-col px-3 py-4 md:px-2">
+  {/* Logo-Bereich mit HdM Branding */}
+  <Link className="mb-2 flex h-20 items-end justify-start 
+                  rounded-md bg-[#3E4847] p-4 md:h-40">
+  {/* Navigation mit responsivem Verhalten */}
+  <div className="flex grow flex-row justify-between 
+                  space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+    <NavLinks />`}</pre>
+                </li>
+                <li>
+                  <span className="font-medium">Cards Grid-Layout:</span>
+                  <pre className="bg-gray-800 text-gray-100 p-2 rounded mt-2">{`<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+  <Card>
+    {/* Card-Inhalt */}
+  </Card>
+</div>`}</pre>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="font-semibold mb-2">3. Responsive Kernkonzepte:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Konsistente Breakpoints:</span>
+                  <ul className="pl-6 mt-2 space-y-1">
+                    <li><code>sm:</code> - Tablets (640px+)</li>
+                    <li><code>md:</code> - Desktop (768px+)</li>
+                    <li><code>lg:</code> - Große Displays (1024px+)</li>
+                  </ul>
+                </li>
+                <li>
+                  <span className="font-medium">Spacing System:</span>
+                  <ul className="pl-6 mt-2 space-y-1">
+                    <li>Container-Padding: <code>p-6 md:p-12</code></li>
+                    <li>Grid Gaps: <code>gap-4</code> bis <code>gap-6</code></li>
+                    <li>Stack Spacing: <code>space-y-2</code> für vertikale, <code>space-x-2</code> für horizontale Abstände</li>
+                  </ul>
+                </li>
+                <li>
+                  <span className="font-medium">HdM Designsystem:</span>
+                  <ul className="pl-6 mt-2 space-y-1">
+                    <li>HdM-Rot: <code>bg-[#e2001a]</code></li>
+                    <li>Dunkelgrau: <code>bg-[#3E4847]</code></li>
+                    <li>Hover-States: <code>hover:bg-[#4a5553]</code></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </section>
         </div>
       </section>
 
       {/* JSON-Endpoints */}
       <section id="json-endpoints" className="mb-12">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6">2. Datenbankanbindung und Datenverarbeitung</h2>
+          <h2 className="text-2xl font-bold mb-6">3. Datenbankanbindung und Datenverarbeitung</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -213,7 +552,7 @@ export default function DocsPage() {
           {/* Datenbankzugriff */}
           <section id="nextjs-api" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">2.1 Datenbankanbindung und Data Access Layer</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.1 Datenbankanbindung und Data Access Layer</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -337,7 +676,8 @@ export default sql;`}</code></pre>
     console.error('Datenbankfehler:', error);
     throw new Error('Fehler beim Laden der Dashboard-Daten.');
   }
-}`}</code></pre>
+}`}</code>
+              </pre>
             </div>
 
             <p className="mb-4">
@@ -348,7 +688,7 @@ export default sql;`}</code></pre>
           </section>          {/* PHP-API */}
           <section id="php-api" className="mb-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold mt-8 mb-4">2.2 Externe PHP-API</h3>
+              <h3 className="text-xl font-semibold mt-8 mb-4">3.2 Externe PHP-API</h3>
               <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
                 ↑ Nach oben
               </Link>
@@ -457,7 +797,8 @@ export async function fetchMeasurementData(id: string) {
     console.error('Fehler beim Laden der Messung:', error);
     throw new Error(\`Messung \${id} konnte nicht geladen werden\`);
   }
-}`}</code></pre>
+}`}</code>
+              </pre>
             </div>            <h4 className="text-lg font-semibold mt-6 mb-4">Server Action für Datenimport</h4>
             <p className="mb-4">
               Die folgende Server Action implementiert den Import von Messdaten aus der PHP-API in die 
@@ -500,7 +841,8 @@ export async function importMeasurement(id: string) {
     console.error('Import error:', error);
     return { success: false, error };
   }
-}`}</code></pre>
+}`}</code>
+              </pre>
             </div>
 
             <p className="mt-6 mb-4">
@@ -513,7 +855,7 @@ export async function importMeasurement(id: string) {
       </section>      {/* Integration Architecture */}
       <section id="architecture" className="mt-8">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold mb-4">2.3 Gesamtarchitektur und Integration</h2>
+          <h2 className="text-2xl font-bold mb-4">3.3 Gesamtarchitektur und Integration</h2>
           <Link href="#" className="text-sm text-gray-500 hover:text-blue-600">
             ↑ Nach oben
           </Link>
@@ -1759,7 +2101,8 @@ export const config = {
    * Alle anderen Routen werden durch die Authentifizierung geschützt
    */
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-};`}</code></pre>
+};`}</code>
+              </pre>
             </div>            <div className="bg-gray-50 rounded-lg p-6 mt-6">
               <h4 className="font-semibold mb-2">Authentifizierungs-Workflow:</h4>
               <ol className="list-decimal pl-6 space-y-2">
