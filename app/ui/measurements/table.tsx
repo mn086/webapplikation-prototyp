@@ -1,9 +1,12 @@
+// Importiere benötigte Komponenten und Funktionen
 import { fetchFilteredMeasurements } from '@/app/lib/data';
-import { DeleteMeasurement, UpdateMeasurement } from '@/app/ui/measurements/buttons';
+import { DeleteAnalysis as DeleteMeasurement, UpdateAnalysis as UpdateMeasurement } from '@/app/ui/analysis/buttons';
 import { formatDateToLocal } from '@/app/lib/utils';
-import { MeasurementTableEntry } from '@/app/lib/data';
 import MeasurementStatus from '@/app/ui/measurements/status';
 
+// Hauptkomponente für die Messungstabelle
+// @param query - Suchbegriff für die Filterung
+// @param currentPage - Aktuelle Seitennummer für die Paginierung
 export default async function MeasurementsTable({
   query,
   currentPage,
@@ -11,12 +14,15 @@ export default async function MeasurementsTable({
   query: string;
   currentPage: number;
 }) {
+  // Lade gefilterte Messungen von der Datenbank
   const measurements = await fetchFilteredMeasurements(query, currentPage);
 
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">          <div className="md:hidden">
+        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+          {/* Mobile Ansicht - wird nur auf kleinen Bildschirmen angezeigt */}
+          <div className="md:hidden">
             {measurements?.map((measurement) => (
               <div
                 key={measurement.id}
@@ -46,7 +52,10 @@ export default async function MeasurementsTable({
               </div>
             ))}
           </div>
+
+          {/* Desktop Ansicht - wird nur auf mittleren und großen Bildschirmen angezeigt */}
           <table className="hidden min-w-full text-gray-900 md:table">
+            {/* Tabellenkopf mit Spaltenüberschriften */}
             <thead className="rounded-lg bg-gray-50 text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
@@ -69,6 +78,8 @@ export default async function MeasurementsTable({
                 </th>
               </tr>
             </thead>
+
+            {/* Tabelleninhalt mit Messungsdaten */}
             <tbody className="divide-y divide-gray-200 bg-white">
               {measurements?.map((measurement) => (
                 <tr
